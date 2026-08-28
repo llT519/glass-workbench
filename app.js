@@ -996,8 +996,43 @@
     navigator.serviceWorker.register('sw.js').catch(() => {});
   }
 
+  /* ================= 登录门禁 ================= */
+  const AUTH_KEY = 'workbench_auth_v1';
+  const AUTH_USER = 'llt519';   // 账号（不区分大小写）
+  const AUTH_PASS = '519403';   // 密码
+
+  function loggedIn() {
+    try { return localStorage.getItem(AUTH_KEY) === 'ok'; } catch (_) { return false; }
+  }
+  /* 返回 true = 已通过登录，继续初始化主界面 */
+  function requireLogin() {
+    if (loggedIn()) return true;
+    const gate = $('#loginGate'), form = $('#loginForm'), err = $('#loginError');
+    gate.hidden = false;
+    const onSubmit = (e) => {
+      e.preventDefault();
+      const u = $('#loginUser').value.trim().toLowerCase();
+      const p = $('#loginPass').value.trim();
+      if (u === AUTH_USER && p === AUTH_PASS) {
+        try { localStorage.setItem(AUTH_KEY, 'ok'); } catch (_) {}
+        gate.hidden = true;
+        form.removeEventListener('submit', onSubmit);
+        init();
+        toast('欢迎回来');
+      } else {
+        err.hidden = false;
+        $('#loginPass').value = '';
+        $('#loginPass').focus();
+      }
+    };
+    form.addEventListener('submit', onSubmit);
+    setTimeout(() => $('#loginUser').focus(), 100);
+    return false;
+  }
+
   /* ================= 初始化 ================= */
   function init() {
+    if (!requireLogin()) return;
     applyPalette();
     /* 应用已保存的流体玻璃渲染质量 */
     if (window.FluidGlassMaterial && state.settings.fluidQuality && state.settings.fluidQuality !== 'auto') {
