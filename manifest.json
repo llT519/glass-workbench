@@ -1,6 +1,6 @@
 {
-  "name": "玻璃工作台",
-  "short_name": "工作台",
+  "name": "惜晷阁",
+  "short_name": "惜晷阁",
   "description": "玻璃拟态个人工作台：待办、番茄钟、记账、学习进度、艾宾浩斯背单词、目标与时间表，支持手机电脑云同步",
   "lang": "zh-CN",
   "start_url": "./index.html",
