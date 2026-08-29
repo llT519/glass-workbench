@@ -1,6 +1,6 @@
 /* 玻璃工作台 Service Worker：静态资源缓存优先，API 请求直连。
    注意：浏览器仅允许 https 或 localhost 页面注册 SW；局域网 http 访问时会静默跳过（功能不受影响）。 */
-const CACHE = 'workbench-cache-v1';
+const CACHE = 'workbench-cache-v2';
 const ASSETS = [
   './',
   './index.html',
