@@ -892,3 +892,33 @@ input[type="date"].input { color-scheme:light; }
     box-shadow:0 6px 18px rgba(120,140,230,.07), inset 0 1px 0 rgba(255,255,255,.7);
   }
 }
+
+/* ---------- 手机端指标卡去灰修复：彩色玻璃独立卡（可横滑、不发灰） ---------- */
+@media (max-width:620px) {
+  .fg-card {
+    /* 关键：把暗色遮罩透明度降到近零（发灰元凶） */
+    --content-shade:.04; --content-shade-mid:.02; --content-shade-soft:.01;
+    --bottom-shade:.03; --top-glow:.04;
+    /* 底色改为流体本色淡染（粉/青/紫/蓝），不再灰白 */
+    background:
+      radial-gradient(130% 95% at 88% 16%, color-mix(in srgb, var(--fluid-b) 30%, transparent), transparent 56%),
+      radial-gradient(120% 100% at 16% 94%, color-mix(in srgb, var(--fluid-c) 20%, transparent), transparent 60%),
+      linear-gradient(152deg, color-mix(in srgb, var(--fluid-a) 14%, #ffffff 92%), #ffffff 78%);
+    border-color:color-mix(in srgb, var(--fluid-a) 42%, transparent);
+    box-shadow:
+      0 8px 22px color-mix(in srgb, var(--fluid-a) 16%, transparent),
+      0 2px 8px color-mix(in srgb, var(--fluid-a) 8%, transparent),
+      inset 0 1px 0 rgba(255,255,255,.75);
+  }
+  /* 移除/弱化暗色内容遮罩层（发灰根因） */
+  .fg-card::before {
+    opacity:.06;
+    background:
+      linear-gradient(90deg, rgba(2,10,8,var(--content-shade)) 0%, rgba(3,13,11,var(--content-shade-mid)) 28%, rgba(3,14,12,var(--content-shade-soft)) 50%, transparent 76%),
+      linear-gradient(180deg, rgba(208,255,246,calc(var(--top-glow) * 1.6)), transparent 34%, rgba(0,0,0,var(--bottom-shade)));
+  }
+  .fg-card:hover, .fg-card.is-selected {
+    border-color:color-mix(in srgb, var(--fluid-a) 55%, transparent);
+    box-shadow:0 10px 26px color-mix(in srgb, var(--fluid-a) 20%, transparent), inset 0 1px 0 rgba(255,255,255,.85);
+  }
+}
