@@ -120,21 +120,56 @@
     $('#syncDotM').dataset.state = s;
   });
 
+  /* ================= 内联 SVG 图标集（统一 1.8 描边，24 viewBox） ================= */
+  const I = (paths) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+  const ICONS = {
+    home: I('<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/>'),
+    study: I('<path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7z"/>'),
+    ledger: I('<path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/>'),
+    goals: I('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>'),
+    nav: I('<circle cx="12" cy="12" r="10"/><path d="m16.2 7.8-2.1 6.3-6.3 2.1 2.1-6.3z"/>'),
+    todo: I('<path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/><path d="m9 11 3 3L22 4"/>'),
+    pomo: I('<path d="M10 2h4"/><circle cx="12" cy="14" r="8"/><path d="M12 14v-4"/>'),
+    pin: I('<path d="M12 17v5"/><path d="M9 10.8a2 2 0 0 1-1.1 1.8l-1.8.9A2 2 0 0 0 5 15.3V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.7a2 2 0 0 0-1.1-1.8l-1.8-.9A2 2 0 0 1 15 10.8V7h1a2 2 0 0 0 2-2V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v1a2 2 0 0 0 2 2h1z"/>'),
+    note: I('<path d="M15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9l7-7V5a2 2 0 0 0-2-2z"/><path d="M15 21v-5a2 2 0 0 1 2-2h5"/>'),
+    trend: I('<path d="m22 7-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/>'),
+    cap: I('<path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>'),
+    calendar: I('<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>'),
+    edit: I('<path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/>'),
+    chart: I('<path d="M12 20v-9"/><path d="M18 20V5"/><path d="M6 20v-5"/>'),
+    receipt: I('<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1z"/><path d="M8 7h8"/><path d="M8 11h8"/>'),
+    flame: I('<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3 1.1-2.1 2.5-3.5 4.5-4.5-.9 2.5-.4 4 .6 5.5a6 6 0 1 1-10 4c0-1 .5-2 1.5-3z"/>'),
+    db: I('<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.7-4 3-9 3s-9-1.3-9-3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/>'),
+    box: I('<path d="M21 8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7z"/><path d="M3.3 7 12 12l8.7-5"/><path d="M12 22V12"/>'),
+    gear: I('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.9 2.9l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.9-2.9l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.9-2.9l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5h.1a1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.9 2.9l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),
+    view3d: I('<path d="M21 8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7z"/><path d="M3.3 7 12 12l8.7-5"/><path d="M12 22V12"/>'),
+    gearSm: I('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.9 2.9l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.9-2.9l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.9-2.9l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5h.1a1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.9 2.9l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>')
+  };
+
+  /* ================= 强调色系统（浅色 Apple 风，替代暗色调色引擎） ================= */
+  const ACCENTS = {
+    sky:    { name: '天空蓝', a: '#0a7cff', aRgb: '10,124,255',  b: '#5ac8fa', bRgb: '90,200,250',  h: '#bfe3ff', hRgb: '191,227,255' },
+    mint:   { name: '薄荷青', a: '#0ab5a5', aRgb: '10,181,165',  b: '#5adbc8', bRgb: '90,219,200',  h: '#c8f5ef', hRgb: '200,245,239' },
+    violet: { name: '浪漫紫', a: '#7c5cff', aRgb: '124,92,255',  b: '#b39bff', bRgb: '179,155,255', h: '#e4dcff', hRgb: '228,220,255' },
+    rose:   { name: '蔷薇粉', a: '#ff5c8a', aRgb: '255,92,138',  b: '#ff9ab5', bRgb: '255,154,181', h: '#ffd9e5', hRgb: '255,217,229' },
+    sunset: { name: '落日橙', a: '#ff8a3c', aRgb: '255,138,60',  b: '#ffb35c', bRgb: '255,179,92',  h: '#ffe6c7', hRgb: '255,230,199' }
+  };
+
   /* ================= 视图路由 ================= */
   const VIEWS = [
-    { id: 'overview', name: '概览', icon: '🏠', title: '概览' },
-    { id: 'study', name: '学习', icon: '📚', title: '学习' },
-    { id: 'ledger', name: '记账', icon: '💰', title: '记账' },
-    { id: 'goals', name: '目标', icon: '🎯', title: '目标' },
-    { id: 'nav', name: '导航', icon: '🧭', title: '导航与工具' }
+    { id: 'overview', name: '概览', icon: 'home', title: '概览' },
+    { id: 'study', name: '学习', icon: 'study', title: '学习' },
+    { id: 'ledger', name: '记账', icon: 'ledger', title: '记账' },
+    { id: 'goals', name: '目标', icon: 'goals', title: '目标' },
+    { id: 'nav', name: '导航', icon: 'nav', title: '导航与工具' }
   ];
   let currentView = 'overview';
 
   function renderNav() {
     $('#sideNav').innerHTML = VIEWS.map((v) =>
-      `<button type="button" data-view="${v.id}" class="${v.id === currentView ? 'active' : ''}" aria-label="${v.name}"><span class="nav-ico">${v.icon}</span><span class="nav-label">${v.name}</span></button>`).join('');
+      `<button type="button" data-view="${v.id}" class="${v.id === currentView ? 'active' : ''}" aria-label="${v.name}">${ICONS[v.icon]}<span class="nav-label">${v.name}</span></button>`).join('');
     $('#tabbar').innerHTML = VIEWS.map((v) =>
-      `<button type="button" data-view="${v.id}" class="${v.id === currentView ? 'active' : ''}"><span class="nav-ico">${v.icon}</span><span class="nav-label">${v.name}</span></button>`).join('');
+      `<button type="button" data-view="${v.id}" class="${v.id === currentView ? 'active' : ''}">${ICONS[v.icon]}<span class="nav-label">${v.name}</span></button>`).join('');
     $$('#sideNav button, #tabbar button').forEach((btn) => {
       btn.addEventListener('click', () => switchView(btn.dataset.view));
     });
@@ -147,21 +182,27 @@
     $$('#sideNav button, #tabbar button').forEach((btn) => btn.classList.toggle('active', btn.dataset.view === id));
   }
 
-  /* ================= 调色引擎（棱镜玻璃） ================= */
-  const paletteApi = window.DarkGlassPaletteEngine.create(window.PALETTE_PRESETS);
-
+  /* ================= 调色引擎（浅色主题：强调色系统） ================= */
   function applyPalette() {
-    const s = state.settings;
-    paletteApi.setPalette(s.palette);
-    paletteApi.setOptions({ intensity: s.intensity, ambientStrength: s.ambientStrength, surfaceTint: s.surfaceTint });
+    /* 浅色 Liquid Glass 主题：仅切换强调色，画布与玻璃由 CSS Token 固定 */
+    const key = ACCENTS[state.settings.palette] ? state.settings.palette : 'sky';
+    const a = ACCENTS[key];
+    const root = document.documentElement;
+    root.style.setProperty('--accent-primary', a.a);
+    root.style.setProperty('--accent-primary-rgb', a.aRgb);
+    root.style.setProperty('--accent-secondary', a.b);
+    root.style.setProperty('--accent-secondary-rgb', a.bRgb);
+    root.style.setProperty('--highlight', a.h);
+    root.style.setProperty('--highlight-rgb', a.hRgb);
+    root.dataset.palette = key;
   }
 
   function renderPaletteGrid() {
     const grid = $('#paletteGrid');
-    grid.innerHTML = window.PALETTE_PRESETS.map((p) => `
-      <button type="button" data-pid="${p.id}" class="${state.settings.palette === p.id ? 'active' : ''}">
-        <span class="palette-strip">${p.colors.map((c) => `<i style="background:${c}"></i>`).join('')}</span>
-        <span>${esc(p.labelZh || p.name)}</span>
+    grid.innerHTML = Object.entries(ACCENTS).map(([id, a]) => `
+      <button type="button" data-pid="${id}" class="${(ACCENTS[state.settings.palette] ? state.settings.palette : 'sky') === id ? 'active' : ''}">
+        <span class="palette-strip"><i style="background:${a.a}"></i><i style="background:${a.b}"></i><i style="background:${a.h}"></i></span>
+        <span>${esc(a.name)}</span>
       </button>`).join('');
     $$('button', grid).forEach((btn) => btn.addEventListener('click', () => {
       state.settings.palette = btn.dataset.pid;
@@ -172,22 +213,6 @@
   }
 
   function bindSliders() {
-    const defs = [
-      ['#optIntensity', 'intensity', '#optIntensityVal'],
-      ['#optAmbient', 'ambientStrength', '#optAmbientVal'],
-      ['#optTint', 'surfaceTint', '#optTintValue']
-    ];
-    for (const [sel, key, outSel] of defs) {
-      const input = $(sel), out = $(outSel);
-      input.value = Math.round(state.settings[key] * 100);
-      out.textContent = Math.round(state.settings[key] * 100) + '%';
-      input.addEventListener('input', () => {
-        state.settings[key] = Number(input.value) / 100;
-        out.textContent = input.value + '%';
-        applyPalette();
-      });
-      input.addEventListener('change', () => saveModule('settings'));
-    }
     const fq = $('#optFluidQuality');
     fq.value = state.settings.fluidQuality || 'auto';
     fq.addEventListener('change', () => {
