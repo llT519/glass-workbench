@@ -879,3 +879,16 @@ input[type="date"].input { color-scheme:light; }
   .quote-embed:hover { transform:none; border-color:rgba(255,255,255,.82); box-shadow:0 10px 26px rgba(30,45,90,.10), inset 0 1px 0 rgba(255,255,255,.92); }
   .quote-embed:active { transform:scale(.975); }
 }
+
+/* ---------- 手机端指标卡进一步弱化（融入极光背景） ---------- */
+@media (max-width:620px) {
+  .fg-card {
+    border-color:rgba(255,255,255,.46);
+    box-shadow:0 2px 10px rgba(120,140,230,.03), inset 0 1px 0 rgba(255,255,255,.55);
+    background:linear-gradient(152deg, rgba(255,255,255,.26), rgba(255,255,255,.10) 55%, rgba(255,255,255,.16));
+  }
+  .fg-card:hover, .fg-card.is-selected {
+    border-color:rgba(255,255,255,.6);
+    box-shadow:0 6px 18px rgba(120,140,230,.07), inset 0 1px 0 rgba(255,255,255,.7);
+  }
+}
