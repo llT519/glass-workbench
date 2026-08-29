@@ -1338,7 +1338,7 @@
       const ranked = Object.entries(tally).sort((a, b) => b[1] - a[1]).map(([k]) => moodOf(k)).filter(Boolean);
       const tie = ranked.length > 1 && tally[ranked[0].k] === tally[ranked[1].k];
       const top = ranked[0] || null;
-      return { key, label: `${d.getMonth() + 1}/${d.getDate()}`, dow: '周' + WEEK_ZH[(d.getDay() + 6) % 7], list, top, tie, second: tie ? ranked[1] : null, today: key === t };
+      return { key, label: `${d.getMonth() + 1}/${d.getDate()}`, dow: '周' + WEEK_ZH[(d.getDay() + 6) % 7], list, top, tie, second: tie ? ranked[1] : null, today: key === todayStr() };
     });
     axis.innerHTML = cols.map((c) => {
       let dot = '<i class="rd-dot none"></i>';
@@ -1447,22 +1447,23 @@
 
   /* ================= 全量渲染 ================= */
   function renderAll() {
-    renderTodos();
-    renderNotes();
-    renderStudy();
-    renderVocab();
-    renderTimetable();
-    renderLedger();
-    renderGoals();
-    renderWeekStats();
-    renderNavGrid();
-    renderTodayAgenda();
-    renderRhythm();
-    renderMood();
-    renderRecall();
-    renderQuote();
-    updateFluidCards();
-    initSpotlight();
+    window.__rs = ['start'];
+    window.__rs = window.__rs || []; try { renderTodos(); } catch (e) { window.__rs.push('FAIL:' + name + ':' + e.message); throw e; } window.__rs.push(name);
+    window.__rs = window.__rs || []; try { renderNotes(); } catch (e) { window.__rs.push('FAIL:' + name + ':' + e.message); throw e; } window.__rs.push(name);
+    window.__rs = window.__rs || []; try { renderStudy(); } catch (e) { window.__rs.push('FAIL:' + name + ':' + e.message); throw e; } window.__rs.push(name);
+    window.__rs = window.__rs || []; try { renderVocab(); } catch (e) { window.__rs.push('FAIL:' + name + ':' + e.message); throw e; } window.__rs.push(name);
+    window.__rs = window.__rs || []; try { renderTimetable(); } catch (e) { window.__rs.push('FAIL:' + name + ':' + e.message); throw e; } window.__rs.push(name);
+    window.__rs = window.__rs || []; try { renderLedger(); } catch (e) { window.__rs.push('FAIL:' + name + ':' + e.message); throw e; } window.__rs.push(name);
+    window.__rs = window.__rs || []; try { renderGoals(); } catch (e) { window.__rs.push('FAIL:' + name + ':' + e.message); throw e; } window.__rs.push(name);
+    window.__rs = window.__rs || []; try { renderWeekStats(); } catch (e) { window.__rs.push('FAIL:' + name + ':' + e.message); throw e; } window.__rs.push(name);
+    window.__rs = window.__rs || []; try { renderNavGrid(); } catch (e) { window.__rs.push('FAIL:' + name + ':' + e.message); throw e; } window.__rs.push(name);
+    window.__rs = window.__rs || []; try { renderTodayAgenda(); } catch (e) { window.__rs.push('FAIL:' + name + ':' + e.message); throw e; } window.__rs.push(name);
+    window.__rs = window.__rs || []; try { renderRhythm(); } catch (e) { window.__rs.push('FAIL:' + name + ':' + e.message); throw e; } window.__rs.push(name);
+    window.__rs = window.__rs || []; try { renderMood(); } catch (e) { window.__rs.push('FAIL:' + name + ':' + e.message); throw e; } window.__rs.push(name);
+    window.__rs = window.__rs || []; try { renderRecall(); } catch (e) { window.__rs.push('FAIL:' + name + ':' + e.message); throw e; } window.__rs.push(name);
+    window.__rs = window.__rs || []; try { renderQuote(); } catch (e) { window.__rs.push('FAIL:' + name + ':' + e.message); throw e; } window.__rs.push(name);
+    window.__rs = window.__rs || []; try { updateFluidCards(); } catch (e) { window.__rs.push('FAIL:' + name + ':' + e.message); throw e; } window.__rs.push(name);
+    window.__rs = window.__rs || []; try { initSpotlight(); } catch (e) { window.__rs.push('FAIL:' + name + ':' + e.message); throw e; } window.__rs.push(name);
   }
 
   /* ================= PWA ================= */
@@ -1508,34 +1509,39 @@
 
   /* ================= 初始化 ================= */
   function init() {
-    if (!requireLogin()) return;
-    /* 注入设置按钮图标 */
-    $('#openSettingsBtn').innerHTML = ICONS.gear;
-    $('#openSettingsBtnM').innerHTML = ICONS.gear;
-    applyPalette();
-    /* 应用已保存的流体玻璃渲染质量 */
-    if (window.FluidGlassMaterial && state.settings.fluidQuality && state.settings.fluidQuality !== 'auto') {
-      window.FluidGlassMaterial.setQuality(state.settings.fluidQuality);
-    }
-    renderNav();
-    switchView('overview');
-    renderPaletteGrid();
-    bindSliders();
-    bindSettings();
-    bindData();
-    bindAddForms();
-    renderAll();
-    renderGreet();
-    tickClock();
-    setInterval(tickClock, 1000);
-    renderLedgerCats();
-    registerSW();
-    /* 已配置云同步：启动轮询并立即拉取合并 */
-    if (Sync.getConfig().valid) {
-      Sync.startPolling();
-      Sync.pollOnce(false).catch(() => {});
+    try {
+      if (!requireLogin()) return;
+      $('#openSettingsBtn').innerHTML = ICONS.gear;
+      $('#openSettingsBtnM').innerHTML = ICONS.gear;
+      applyPalette();
+      if (window.FluidGlassMaterial && state.settings.fluidQuality && state.settings.fluidQuality !== 'auto') {
+        window.FluidGlassMaterial.setQuality(state.settings.fluidQuality);
+      }
+      renderNav();
+      switchView('overview');
+      renderPaletteGrid();
+      bindSliders();
+      bindSettings();
+      bindData();
+      bindAddForms();
+      renderAll();
+      renderGreet();
+      tickClock();
+      setInterval(tickClock, 1000);
+      renderLedgerCats();
+      registerSW();
+      if (Sync.getConfig().valid) {
+        Sync.startPolling();
+        Sync.pollOnce(false).catch(() => {});
+      }
+    } catch (e) {
+      console.error('INIT 失败:', e);
+      const st = (e && e.stack ? e.stack : '').split(String.fromCharCode(10));
+
+      document.title = 'ERR: ' + (e && e.message ? e.message : e) + ' @ ' + st.trim().slice(0, 80);
+      const el = document.getElementById('viewTitle');
+      if (el) el.textContent = '初始化出错';
     }
   }
-
   document.addEventListener('DOMContentLoaded', init);
 })();
