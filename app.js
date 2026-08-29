@@ -941,6 +941,7 @@
     { k: 'focus', n: '专注', c: '#34c759', v: 4 },
     { k: 'calm',  n: '平静', c: '#30b0c7', v: 3 },
     { k: 'tired', n: '疲惫', c: '#8e8e93', v: 2 },
+    { k: 'exhausted', n: '好累', c: '#6b7280', v: 2 },
     { k: 'irr',   n: '烦躁', c: '#e0673c', v: 2 },
     { k: 'down',  n: '低落', c: '#5e5ce6', v: 1 }
   ];
@@ -1169,23 +1170,6 @@
         saveModule('mood');
         renderMood(); renderRhythm();
         toast(`已记录 ${entry.at} · ${moodOf(k).n}`);
-      }));
-    }
-    // 今日记录时间线（可删单条）
-    const tl = $('#moodTodayList');
-    if (tl) {
-      tl.innerHTML = todayList.length
-        ? todayList.map((r, i) => {
-            const m = moodOf(r.m) || MOODS[0];
-            return `<span class="mood-rec"><i style="background:${m.c}"></i>${r.at || '--:--'} · ${m.n}<button data-ri="${i}" type="button" aria-label="删除">✕</button></span>`;
-          }).join('')
-        : '';
-      $$('[data-ri]', tl).forEach((btn) => btn.addEventListener('click', () => {
-        const list = moodEntries(t);
-        list.splice(Number(btn.dataset.ri), 1);
-        if (list.length) state.mood.days[t] = list; else delete state.mood.days[t];
-        saveModule('mood');
-        renderMood(); renderRhythm();
       }));
     }
     // 近 14 天柱状：颜色=当天占比最大的心情；五五开体现两种
