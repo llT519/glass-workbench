@@ -11,8 +11,8 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="vendor/fluid-glass-material.css">
+  <link rel="stylesheet" href="styles.css?v=20260829b">
+  <link rel="stylesheet" href="vendor/fluid-glass-material.css?v=20260829b">
 </head>
 <body class="dg-canvas">
   <!-- 登录门禁：账号或密码任一错误均无法进入；登录状态长期保存在本机 -->
@@ -53,7 +53,7 @@
           <span class="sync-dot" id="syncDot" data-state="off"></span>
           <span id="syncText">本地模式</span>
         </div>
-        <button class="btn ghost" id="openSettingsBtn" type="button">⚙ 系统设置</button>
+        <button class="btn ghost" id="openSettingsBtn" type="button" aria-label="系统设置" title="系统设置">⚙</button>
       </div>
     </aside>
 
@@ -103,7 +103,7 @@
               </div>
             </div>
 
-            <div class="card dg-card span-5">
+            <div class="card dg-card span-5" data-tint="cyan">
               <div class="card-head"><h2><span class="hd-ico">✅</span>待办清单</h2><span class="card-meta" id="todoMeta"></span></div>
               <div class="card-body todo-body">
                 <form class="inline-form" id="todoForm">
@@ -117,7 +117,7 @@
               </div>
             </div>
 
-            <div class="card dg-card span-4">
+            <div class="card dg-card span-4" data-tint="amber">
               <div class="card-head"><h2><span class="hd-ico">🍅</span>番茄钟</h2><span class="card-meta" id="pomoMeta"></span></div>
               <div class="card-body pomo-body">
                 <div class="pomo-ring">
@@ -140,12 +140,12 @@
               </div>
             </div>
 
-            <div class="card dg-card span-4">
+            <div class="card dg-card span-4" data-tint="blue">
               <div class="card-head"><h2><span class="hd-ico">📌</span>今日安排</h2><span class="card-meta" id="agendaMeta"></span></div>
               <div class="card-body" id="todayAgenda"></div>
             </div>
 
-            <div class="card dg-card span-4">
+            <div class="card dg-card span-4" data-tint="violet">
               <div class="card-head"><h2><span class="hd-ico">📝</span>便签</h2><button class="btn ghost small" id="noteAdd" type="button">+ 新便签</button></div>
               <div class="card-body note-body" id="noteList"></div>
             </div>
@@ -155,12 +155,12 @@
         <!-- ② 学习 -->
         <section class="view" data-view="study" hidden>
           <div class="card-grid">
-            <div class="card dg-card span-4">
+            <div class="card dg-card span-4" data-tint="violet">
               <div class="card-head"><h2><span class="hd-ico">📈</span>学习进度</h2><button class="btn ghost small" id="studyAdd" type="button">+ 新项目</button></div>
               <div class="card-body" id="studyList"></div>
             </div>
 
-            <div class="card dg-card span-5">
+            <div class="card dg-card span-5" data-tint="cyan">
               <div class="card-head"><h2><span class="hd-ico">🧠</span>艾宾浩斯背单词</h2><span class="card-meta" id="vocabMeta"></span></div>
               <div class="card-body vocab-body">
                 <form class="inline-form" id="vocabForm">
@@ -176,7 +176,7 @@
               </div>
             </div>
 
-            <div class="card dg-card span-3">
+            <div class="card dg-card span-3" data-tint="amber">
               <div class="card-head"><h2><span class="hd-ico">🗓</span>每周时间表</h2><button class="btn ghost small" id="ttAdd" type="button">+ 添加安排</button></div>
               <div class="card-body tt-body" id="timetable"></div>
             </div>
@@ -186,7 +186,7 @@
         <!-- ③ 记账 -->
         <section class="view" data-view="ledger" hidden>
           <div class="card-grid">
-            <div class="card dg-card span-4">
+            <div class="card dg-card span-4" data-tint="amber">
               <div class="card-head"><h2><span class="hd-ico">✏️</span>快速记一笔</h2></div>
               <div class="card-body">
                 <form id="ledgerForm" class="ledger-form">
@@ -207,12 +207,12 @@
               </div>
             </div>
 
-            <div class="card dg-card span-4">
+            <div class="card dg-card span-4" data-tint="cyan">
               <div class="card-head"><h2><span class="hd-ico">📊</span>本月统计</h2><span class="card-meta" id="ledgerMonthMeta"></span></div>
               <div class="card-body" id="ledgerStats"></div>
             </div>
 
-            <div class="card dg-card span-4">
+            <div class="card dg-card span-4" data-tint="violet">
               <div class="card-head"><h2><span class="hd-ico">🧾</span>记录</h2><span class="card-meta" id="ledgerListMeta"></span></div>
               <div class="card-body">
                 <ul class="ledger-list" id="ledgerList"></ul>
@@ -224,11 +224,11 @@
         <!-- ④ 目标 -->
         <section class="view" data-view="goals" hidden>
           <div class="card-grid">
-            <div class="card dg-card span-7">
+            <div class="card dg-card span-7" data-tint="rose">
               <div class="card-head"><h2><span class="hd-ico">🎯</span>目标</h2><button class="btn ghost small" id="goalAdd" type="button">+ 新目标</button></div>
               <div class="card-body" id="goalList"></div>
             </div>
-            <div class="card dg-card span-5">
+            <div class="card dg-card span-5" data-tint="cyan">
               <div class="card-head"><h2><span class="hd-ico">🔥</span>近 7 天完成</h2></div>
               <div class="card-body" id="weekStats"></div>
             </div>
@@ -238,20 +238,20 @@
         <!-- ⑤ 导航 -->
         <section class="view" data-view="nav" hidden>
           <div class="card-grid">
-            <div class="card dg-card span-5">
+            <div class="card dg-card span-5" data-tint="blue">
               <div class="card-head"><h2><span class="hd-ico">🧭</span>快捷导航</h2><button class="btn ghost small" id="navAdd" type="button">+ 添加网址</button></div>
               <div class="card-body">
                 <div class="navgrid" id="navGrid"></div>
               </div>
             </div>
-            <div class="card dg-card span-4 threed-card">
+            <div class="card dg-card span-4 threed-card" data-tint="violet">
               <div class="card-head"><h2><span class="hd-ico">🔮</span>3D 卡片环</h2></div>
               <div class="card-body threed-body">
                 <p>进入三维环绕的亚克力卡片展示模式，可拖动旋转、滚轮缩放，卡片颜色与文字均可自定义。</p>
                 <button class="btn primary wide" id="open3dBtn" type="button">进入 3D 模式</button>
               </div>
             </div>
-            <div class="card dg-card span-3">
+            <div class="card dg-card span-3" data-tint="slate">
               <div class="card-head"><h2><span class="hd-ico">🗄</span>数据</h2></div>
               <div class="card-body data-body">
                 <button class="btn ghost wide" id="exportBtn" type="button">导出全部数据（JSON）</button>
@@ -344,10 +344,10 @@
       ]
     };
   </script>
-  <script src="vendor/palette-engine.js"></script>
-  <script src="vendor/palette-presets.js"></script>
-  <script src="sync.js"></script>
-  <script src="vendor/fluid-glass-engine.js"></script>
-  <script src="app.js"></script>
+  <script src="vendor/palette-engine.js?v=20260829b"></script>
+  <script src="vendor/palette-presets.js?v=20260829b"></script>
+  <script src="sync.js?v=20260829b"></script>
+  <script src="vendor/fluid-glass-engine.js?v=20260829b"></script>
+  <script src="app.js?v=20260829b"></script>
 </body>
 </html>
