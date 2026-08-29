@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#dce4f5">
+  <meta name="theme-color" content="#d9dff2">
   <meta name="description" content="玻璃工作台：待办、番茄钟、记账、学习进度、艾宾浩斯背单词、目标与时间表，手机电脑云同步">
   <title>玻璃工作台</title>
   <link rel="manifest" href="manifest.json">
@@ -84,6 +84,16 @@
             <div class="card agenda-card span-4" data-tint="blue">
               <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 17v5"/><path d="M9 10.8a2 2 0 0 1-1.1 1.8l-1.8.9A2 2 0 0 0 5 15.3V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.7a2 2 0 0 0-1.1-1.8l-1.8-.9A2 2 0 0 1 15 10.8V7h1a2 2 0 0 0 2-2V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v1a2 2 0 0 0 2 2h1z"/></svg></span>今日安排</h2><span class="card-meta" id="agendaMeta"></span></div>
               <div class="card-body" id="todayAgenda"></div>
+
+
+            <div class="card quote-card span-12" data-tint="violet">
+              <div class="quote-inner" id="quoteCard" title="点击换一句">
+                <div class="quote-mark">“</div>
+                <p class="quote-text" id="quoteText"></p>
+                <p class="quote-meta" id="quoteMeta"></p>
+                <p class="quote-tip">轻触换一句 · 每 5 分钟自动轮换</p>
+              </div>
+            </div>
             </div>
 
             <div class="fg-grid span-12" id="fluidGlassGrid" aria-label="今日数据指标"></div>
@@ -125,6 +135,7 @@
             <div class="card span-4" data-tint="blue">
               <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01M15 9h.01"/></svg></span>状态与心情</h2><span class="card-meta" id="moodMeta"></span></div>
               <div class="card-body mood-body">
+                <p class="mood-summary" id="moodSummary"></p>
                 <div class="mood-chips" id="moodChips"></div>
                 <div class="mood-chart-title">近 14 天状态</div>
                 <div class="mood-bars" id="moodBars"></div>
@@ -138,15 +149,6 @@
             <div class="card span-8" data-tint="violet">
               <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9l7-7V5a2 2 0 0 0-2-2z"/><path d="M15 21v-5a2 2 0 0 1 2-2h5"/></svg></span>便签</h2><button class="btn ghost small" id="noteAdd" type="button">+ 新便签</button></div>
               <div class="card-body note-body" id="noteList"></div>
-            </div>
-
-            <div class="card quote-card span-12" data-tint="violet">
-              <div class="quote-inner" id="quoteCard" title="点击换一句">
-                <div class="quote-mark">“</div>
-                <p class="quote-text" id="quoteText"></p>
-                <p class="quote-meta" id="quoteMeta"></p>
-                <p class="quote-tip">轻触换一句 · 每 5 分钟自动轮换</p>
-              </div>
             </div>
           </div>
         </section>
@@ -233,13 +235,6 @@
               <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16.2 7.8-2.1 6.3-6.3 2.1 2.1-6.3z"/></svg></span>快捷导航</h2><button class="btn ghost small" id="navAdd" type="button">+ 添加</button></div>
               <div class="card-body"><div class="navgrid" id="navGrid"></div></div>
             </div>
-            <div class="card span-4 threed-card" data-tint="violet">
-              <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7z"/><path d="M3.3 7 12 12l8.7-5"/><path d="M12 22V12"/></svg></span>3D 卡片环</h2></div>
-              <div class="card-body threed-body">
-                <p>进入三维环绕的亚克力卡片展示模式，可拖动旋转、滚轮缩放，卡片颜色与文字均可自定义。</p>
-                <button class="btn primary wide" id="open3dBtn" type="button">进入 3D 模式</button>
-              </div>
-            </div>
             <div class="card span-3" data-tint="slate">
               <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.7-4 3-9 3s-9-1.3-9-3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/></svg></span>数据</h2></div>
               <div class="card-body data-body">
@@ -299,15 +294,6 @@
         </fieldset>
       </div>
     </div>
-  </div>
-
-  <!-- 3D 全屏模式 -->
-  <div class="threed-overlay" id="threedOverlay" hidden>
-    <div class="threed-bar">
-      <button class="btn primary" id="close3dBtn" type="button">← 返回工作台</button>
-      <span class="threed-tip">拖动旋转 · 滚轮缩放 · 点击卡片居中</span>
-    </div>
-    <iframe id="threedFrame" src="" title="3D 卡片环" allow="fullscreen"></iframe>
   </div>
 
   <div class="toast" id="toast" role="status"></div>
