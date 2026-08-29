@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#dfe4f4">
-  <meta name="description" content="惜晷阁：待办、番茄钟、记账、学习进度、艾宾浩斯背单词、目标与时间表，手机电脑云同步">
+  <meta name="description" content="惜晷阁：待办、记账、学习进度、艾宾浩斯背单词、目标与时间表，手机电脑云同步">
   <title>惜晷阁 · 玻璃工作台</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" href="icon-192.png">
@@ -84,16 +84,14 @@
             <div class="card agenda-card span-4" data-tint="blue">
               <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 17v5"/><path d="M9 10.8a2 2 0 0 1-1.1 1.8l-1.8.9A2 2 0 0 0 5 15.3V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.7a2 2 0 0 0-1.1-1.8l-1.8-.9A2 2 0 0 1 15 10.8V7h1a2 2 0 0 0 2-2V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v1a2 2 0 0 0 2 2h1z"/></svg></span>今日安排</h2><span class="card-meta" id="agendaMeta"></span></div>
               <div class="card-body" id="todayAgenda"></div>
-
-
-            <div class="card quote-card span-12" data-tint="violet">
-              <div class="quote-inner" id="quoteCard" title="点击换一句">
+              <div class="quote-embed" id="quoteCard" title="点击换一句">
                 <div class="quote-mark">“</div>
                 <p class="quote-text" id="quoteText"></p>
                 <p class="quote-meta" id="quoteMeta"></p>
-                </div>
+                <p class="quote-tip">轻触换一句 · 每 5 分钟自动轮换</p>
+              </div>
             </div>
-            </div>
+
 
             <div class="fg-grid span-12" id="fluidGlassGrid" aria-label="今日数据指标"></div>
 
@@ -114,7 +112,7 @@
                 </div>
                 <div class="rhythm-legend">
                   <div class="rl-item"><i style="background:#0a7cff"></i><span>今日待办</span><b id="rlTodo">0/0</b></div>
-                  <div class="rl-item"><i style="background:#ff375f"></i><span>番茄专注</span><b id="rlPomo">0 个</b></div>
+                  <div class="rl-item"><i style="background:#ff375f"></i><span>心情打卡</span><b id="rlPomo">0 个</b></div>
                   <div class="rl-item"><i style="background:#30d158"></i><span>单词复习</span><b id="rlVocab">0 词</b></div>
                 </div>
               </div>
@@ -314,10 +312,10 @@
       quality: 'auto',
       interaction: true,
       cards: [
-        { key: 'todo',    label: '今日待办', eyebrow: 'TODO · TODAY',       value: '0', unit: '项', change: 0, preset: 'custom', a: '#8fa9ff', b: '#ccd9ff', c: '#2c3872', surface: 0.46 },
-        { key: 'pomo',    label: '番茄专注', eyebrow: 'FOCUS · POMODORO',   value: '0', unit: '个', change: 0, preset: 'custom', a: '#9fa4ff', b: '#d4d8ff', c: '#343a7a', surface: 0.46 },
-        { key: 'vocab',   label: '待复习',   eyebrow: 'MEMORY · EBINGHAUS', value: '0', unit: '词', change: 0, preset: 'custom', a: '#8fc0ff', b: '#cfe6ff', c: '#2a4478', surface: 0.46 },
-        { key: 'expense', label: '本月支出', eyebrow: 'SPENDING · MONTH',   value: '0', unit: '元', change: 0, preset: 'custom', a: '#a99fff', b: '#ded9ff', c: '#3f3a80', surface: 0.46 }
+        { key: 'todo',    label: '今日待办', eyebrow: 'TODO · TODAY',       value: '0', unit: '项', change: 0, preset: 'custom', a: '#5b8dff', b: '#a8c3ff', c: '#26346b', surface: 0.30 },
+        { key: 'mood',    label: '心情记录', eyebrow: 'MOOD · TODAY',       value: '0', unit: '条', change: 0, preset: 'custom',   a: '#ff85b3', b: '#ffc9de', c: '#7a2f57', surface: 0.30 },
+        { key: 'vocab',   label: '待复习',   eyebrow: 'MEMORY · EBINGHAUS', value: '0', unit: '词', change: 0, preset: 'custom', a: '#45c8e8', b: '#9fe9ff', c: '#1f5f73', surface: 0.30 },
+        { key: 'expense', label: '本月支出', eyebrow: 'SPENDING · MONTH',   value: '0', unit: '元', change: 0, preset: 'custom', a: '#a08cff', b: '#d0c4ff', c: '#3c2f7a', surface: 0.30 }
       ]
     };
   </script>
