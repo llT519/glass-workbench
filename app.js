@@ -562,12 +562,12 @@
         id: uid(), start: $('#ttStart').value || '08:00', end: $('#ttEnd').value || '09:00', text
       });
       state.schedule[dayKey].sort((a, b) => (a.start || '').localeCompare(b.start || ''));
-      saveModule('schedule'); renderTimetable(); toast('已添加到周' + WEEK_ZH[Number(dayKey) - 1]);
+      saveModule('schedule'); renderTimetable(); renderTodayAgenda(); toast('已添加到周' + WEEK_ZH[Number(dayKey) - 1]);
     });
     $$('[data-ttdel]', wrap).forEach((btn) => btn.addEventListener('click', () => {
       const [dayKey, id] = btn.dataset.ttdel.split('|');
       state.schedule[dayKey] = (state.schedule[dayKey] || []).filter((s) => s.id !== id);
-      saveModule('schedule'); renderTimetable();
+      saveModule('schedule'); renderTimetable(); renderTodayAgenda();
     }));
   }
 
@@ -941,55 +941,230 @@
     { k: 'down',  n: '低落', c: '#5e5ce6', v: 1 }
   ];
   const moodOf = (k) => MOODS.find((m) => m.k === k);
-  /* 今日心情总结：根据记录的状态生成一句话 */
-  function moodSummary(rec) {
-    if (!rec) return '今天还没记录状态，选一个贴切的心情吧';
-    const s = {
-      happy: '今天心情很好，把这份开心记下来，以后回顾时它会发光 ☀',
-      flow: '今天状态拉满！记住现在的节奏感，这就是你最高效的样子 🚀',
-      focus: '今天很专注，深度工作的感觉真好，明天试试同样的开始方式 🎯',
-      calm: '今天心态平稳，平稳本身就是一种高效，适合复盘与规划 🌊',
-      tired: '今天累了就早点休息，恢复也是学习节奏的一部分 🌙',
-      irr: '今天有些烦躁，出门走走或听首歌，别硬撑 🍃',
-      down: '今天情绪偏低，允许自己慢一点，明天会好一些 🫂'
-    };
-    return s[rec.m] || '已记录今天的状态';
+  /* 某天的记录列表（兼容旧版单条格式，统一为数组） */
+  function moodEntries(d) {
+    const v = (state.mood.days || {})[d];
+    if (!v) return [];
+    return Array.isArray(v) ? v : [v];
   }
+  /* 今日心情总结：根据记录的状态生成一句话 */
 
   function renderMood() {
     const t = todayStr();
     const days = state.mood.days || {};
-    const todayRec = days[t];
-    // 今日总结
+    const todayList = moodEntries(t);
+    const latest = todayList[todayList.length - 1];
+
+  /* ================= 今日心情总结话术库 =================
+     支持复杂心情：按当天出现的心情集合匹配话术；当天内稳定，隔日更换 */
+  const SUMMARY_SINGLE = {
+    happy: [
+      '今天的开心是真的开心，把这一页翻得慢一点，让它多留一会儿。',
+      '心情明亮的一天，这样的日子值得被好好记住。',
+      '笑出来的次数变多了，今天的你比昨天更懂得取悦自己。',
+      '开心的情绪在扩散，趁状态好，去做一点平时不敢做的事。',
+      '今天是那种很多年后想起来还会嘴角上扬的日子。'
+    ],
+    flow: [
+      '今天进入了难得的心流，事情一件件被推平，这种手感要趁热记录下来。',
+      '状态拉满的一天，效率本身就是最好的正反馈。',
+      '今天的你像上了发条，但步调依然是自己的，很难得。',
+      '思绪清晰、推进顺畅，把今天的工作方式复盘一下，它值得复用。',
+      '高效不是偶然，今天的节奏值得被写进你的方法库里。'
+    ],
+    focus: [
+      '今天的注意力很集中，世界很吵，但你没有被打断。',
+      '专注是你今天送给自己的礼物，沉进去的时间最值钱。',
+      '能坐得住、沉得下，今天的深度超过大多数人。',
+      '今天的专注像一层滤镜，把杂音都隔在了外面。',
+      '专注的时间过得最快，也最让人踏实。'
+    ],
+    calm: [
+      '今天心里很静，像湖面没有风，适合想清楚一些事。',
+      '平静不是没有波澜，而是波澜被你稳稳接住了。',
+      '今天节奏不快，但每一步都踩得很稳。',
+      '情绪在线、心态松弛，这种平衡感是长期修炼的结果。',
+      '平静的一天也有它的分量，它让你有力气走更远。'
+    ],
+    tired: [
+      '今天的疲惫是真实存在的，别硬撑，先把电量充回来。',
+      '身体在提醒你慢一点，休息不是偷懒，是节奏的一部分。',
+      '今天电量见底了，允许自己早点收工，明天再战。',
+      '累的时候降低期待，完成比完美重要。',
+      '疲惫被你记下来了，它会帮你找到更适合自己的强度。'
+    ],
+    irr: [
+      '今天有点烦躁，情绪来了不用赶，它待一会儿自己会走。',
+      '烦躁是信号不是敌人，它在告诉你有些事该调整了。',
+      '今天的火气记得找个出口，运动、音乐或者早点睡都行。',
+      '被小事点燃的一天，先深呼吸，重要决定明天再做。',
+      '烦躁被记录下来就够了，能觉察它的人已经很厉害。'
+    ],
+    down: [
+      '今天情绪偏低，允许自己慢一点，你不需要每天都满电。',
+      '低落的日子也是日子的一部分，你今天能记录下来，已经是自救。',
+      '今天辛苦了，哪怕什么都没做成，好好活着就值得肯定。',
+      '把难过写下来之后，它就轻了一点，明天试试晒晒太阳。',
+      '低谷不是终点，它只是节奏里的一个休止符。'
+    ]
+  };
+  const SUMMARY_COMBO = {
+    'happy+flow': [
+      '又开心又高效，这种双倍的好日子要好好存档，它是你的黄金配方。',
+      '心情好、推进快，今天的你几乎无懈可击。',
+      '开心和效率互相成就，今天的节奏请务必复盘留存。'
+    ],
+    'focus+flow': [
+      '专注加持心流，今天的深度和速度都在线，这是最理想的运转模式。',
+      '既沉得下又跑得动，今天的你处于满血运转状态。'
+    ],
+    'happy+focus': [
+      '带着好心情深度专注，今天的产出会格外让你满意。',
+      '开心的情绪没有打散专注，反而推了你一把，很难得。'
+    ],
+    'happy+calm': [
+      '开心又平静，不亢奋也不低落，今天的情绪质感非常好。',
+      '这种轻盈的愉悦最持久，今天适合把重要的事慢慢做。'
+    ],
+    'calm+flow': [
+      '平静地高效着，不急不躁地推进，今天的状态很高级。'
+    ],
+    'happy+tired': [
+      '虽然累，但今天笑得很真，累得有价值的日子不算亏。',
+      '开心和疲惫并存，说明今天过得用力，记得早点休息。'
+    ],
+    'tired+flow': [
+      '身体有点累，但事情在推进，这种疲惫是值得的，今晚好好补觉。',
+      '累着也在前进，今天辛苦了，别忘了犒劳自己。'
+    ],
+    'happy+irr': [
+      '今天有开心也有烦躁，情绪像天气一样变化，这很正常，也很真实。',
+      '笑与烦躁交替的一天，说明你在认真生活，而不是麻木地过。'
+    ],
+    'happy+down': [
+      '今天既有开心也有低落，情绪在两极之间，你不必只选一种。',
+      '笑中带丧的一天也很完整，阴晴都是你。'
+    ],
+    'focus+calm': [
+      '平静且专注，今天的注意力像深水，安静但有力。'
+    ],
+    'focus+tired': [
+      '专注透支了电量，今天的坚持很有分量，接下来交给休息。',
+      '累但专注着收尾，这种责任感值得肯定，别熬太晚。'
+    ],
+    'focus+irr': [
+      '烦躁但没有跑偏，你顶着情绪完成了专注，这很了不起。',
+      '带着火气还能沉下来，今天的自控力值得记录。'
+    ],
+    'focus+down': [
+      '情绪不高但你依然在专注，这份定力比结果更珍贵。',
+      '低落没有击穿你的专注，今天你赢了自己一次。'
+    ],
+    'calm+tired': [
+      '累但心态平稳，今天的你没有内耗，这已经是很好的应对。'
+    ],
+    'calm+irr': [
+      '烦躁被你的平静托住了，情绪有波动但没翻船。'
+    ],
+    'calm+down': [
+      '低落但安静，你在用自己的节奏消化它，这样很好。',
+      '平静地面对低落，今天的你很温柔也很坚强。'
+    ],
+    'tired+irr': [
+      '又累又烦躁，今天对自己好一点，先把最基本的事做完就好。',
+      '电量低火气高，减少安排、多喝水，今天及格线是活着。'
+    ],
+    'tired+down': [
+      '疲惫叠加低落，今天别要求太多，能记录下心情已经是积极的信号。',
+      '今天很难，但你撑过来并且记录了，这一步很重要。'
+    ],
+    'irr+down': [
+      '烦躁和低落一起来了，它们都会过去，今晚先好好休息。'
+    ],
+    'flow+irr': [
+      '带着烦躁依然推进高效，情绪没有拖垮你的行动力，很硬核。'
+    ],
+    'flow+down': [
+      '情绪偏低但事情在推进，用行动拉着情绪走，今天很有韧性。'
+    ]
+  };
+  const SUMMARY_COMPLEX = [
+    '今天的心情很丰富，像天气一样多变——这不代表不稳定，而是你在认真地生活。',
+    '多种情绪在一天里轮番登场，能全部接住的你，比想象中更有韧性。',
+    '今天情绪的层次很多，好的坏的最后都成了你的经历，都值得被记录。',
+    '复杂的一天不必强行总结，你已经如实记下了它，这就够了。'
+  ];
+  const SUMMARY_MIX2 = [
+    '今天{a}和{b}交织在一起，情绪不是单选题，你的感受都很真实。',
+    '{a}与{b}同一天出现，说明今天过得并不平淡，你体验得很充分。',
+    '在{a}和{b}之间切换的一天，能同时容纳两种情绪，说明你的内核很稳。'
+  ];
+  function pickSummary(pool, seed) {
+    return pool[Math.abs(seed) % pool.length];
+  }
+  /* 按当日心情集合生成总结：单状态 / 双状态组合 / 复杂混合 */
+  function moodSummaryDay(list) {
+    if (!list || !list.length) return '今天还没记录状态，选一个贴切的心情吧';
+    const keys = [...new Set(list.map((r) => r.m))].filter((k) => moodOf(k));
+    if (!keys.length) return '已记录今天的状态';
+    const seed = keys.join('').split('').reduce((a, c) => a + c.charCodeAt(0), keys.length * 7) + new Date().getDate();
+    if (keys.length >= 3) return pickSummary(SUMMARY_COMPLEX, seed);
+    if (keys.length === 2) {
+      const combo = SUMMARY_COMBO[keys.join('+')] || SUMMARY_COMBO[[...keys].reverse().join('+')];
+      if (combo) return pickSummary(combo, seed);
+      return pickSummary(SUMMARY_MIX2, seed)
+        .replace('{a}', moodOf(keys[0]).n).replace('{b}', moodOf(keys[1]).n);
+    }
+    return pickSummary(SUMMARY_SINGLE[keys[0]] || ['已记录今天的状态'], seed);
+  }
+
+    // 今日总结（按最新一条）
     const sum = $('#moodSummary');
-    if (sum) sum.textContent = moodSummary(days[t]);
-    // 今日状态 chips
+    if (sum) sum.textContent = moodSummaryDay(todayList);
+    // 今日状态 chips（随时可追加记录）
     const chips = $('#moodChips');
     if (chips) {
       chips.innerHTML = MOODS.map((m) => {
-        const on = todayRec && todayRec.m === m.k;
-        return `<button type="button" class="mood-chip ${on ? 'on' : ''}" data-mood="${m.k}"><i style="background:${m.c}"></i>${m.n}</button>`;
+        const on = latest && latest.m === m.k;
+        return `<button type="button" class="mood-chip ${on ? 'on' : ''}" data-mood="${m.k}" title="记录一次「${m.n}」"><i style="background:${m.c}"></i>${m.n}</button>`;
       }).join('');
       $$('button', chips).forEach((b) => b.addEventListener('click', () => {
         const k = b.dataset.mood;
         state.mood.days = state.mood.days || {};
-        const prev = (state.mood.days[t] || {}).m;
-        if (prev === k) delete state.mood.days[t]; // 再点一次取消
-        else state.mood.days[t] = { m: k, n: (state.mood.days[t] || {}).n || '' };
+        const now = new Date();
+        const entry = { m: k, at: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}` };
+        state.mood.days[t] = [...moodEntries(t), entry];
         saveModule('mood');
         renderMood(); renderRhythm();
-        toast(prev === k ? '已取消今天的记录' : '已记录今天的状态：' + moodOf(k).n);
+        toast(`已记录 ${entry.at} · ${moodOf(k).n}`);
       }));
     }
-    // 近 14 天柱状（高度=状态分值，颜色=状态色）
+    // 今日记录时间线（可删单条）
+    const tl = $('#moodTodayList');
+    if (tl) {
+      tl.innerHTML = todayList.length
+        ? todayList.map((r, i) => {
+            const m = moodOf(r.m) || MOODS[0];
+            return `<span class="mood-rec"><i style="background:${m.c}"></i>${r.at || '--:--'} · ${m.n}<button data-ri="${i}" type="button" aria-label="删除">✕</button></span>`;
+          }).join('')
+        : '';
+      $$('[data-ri]', tl).forEach((btn) => btn.addEventListener('click', () => {
+        const list = moodEntries(t);
+        list.splice(Number(btn.dataset.ri), 1);
+        if (list.length) state.mood.days[t] = list; else delete state.mood.days[t];
+        saveModule('mood');
+        renderMood(); renderRhythm();
+      }));
+    }
+    // 近 14 天柱状（高度=当天最新状态分值，颜色=状态色）
     const bars = $('#moodBars');
     if (bars) {
       const cols = Array.from({ length: 14 }, (_, i) => {
         const d = new Date(); d.setDate(d.getDate() - (13 - i));
         const key = todayStr(d);
-        const rec = days[key];
-        const m = rec ? moodOf(rec.m) : null;
-        return { key, label: `${d.getMonth() + 1}/${d.getDate()}`, m, today: key === t };
+        const list = moodEntries(key);
+        const m = list.length ? moodOf(list[list.length - 1].m) : null;
+        return { key, label: `${d.getMonth() + 1}/${d.getDate()}`, m, cnt: list.length, today: key === t };
       });
       bars.innerHTML = cols.map((c) => `
         <span class="mood-bar ${c.today ? 'today' : ''}" title="${c.key}${c.m ? ' · ' + c.m.n : ' · 未记录'}">
@@ -997,15 +1172,16 @@
           <em>${c.label.split('/')[1]}</em>
         </span>`).join('');
     }
-    // 分布饼 + 统计
+    // 今日心情占比饼图（今日各状态条目占比，样式与位置不变）
     const pie = $('#moodPie');
     if (pie) {
       const tally = {};
-      for (const rec of Object.values(days)) {
-        if (!rec || !moodOf(rec.m)) continue;
+      let total = 0;
+      for (const rec of todayList) {
+        if (!moodOf(rec.m)) continue;
         tally[rec.m] = (tally[rec.m] || 0) + 1;
+        total++;
       }
-      const total = Object.values(tally).reduce((a, b) => a + b, 0);
       let acc = 0; const stops = [];
       for (const m of MOODS) {
         if (!tally[m.k]) continue;
@@ -1016,10 +1192,13 @@
       pie.style.background = total ? `conic-gradient(${stops.join(',')})` : 'rgba(20,30,60,.08)';
       const top = Object.entries(tally).sort((a, b) => b[1] - a[1])[0];
       const topM = top ? moodOf(top[0]) : null;
-      $('#moodStat').innerHTML = `
-        <b>${Object.keys(days).length}</b> 天记录 · 最常状态
-        <b style="color:${topM ? topM.c : 'inherit'}">${topM ? topM.n : '—'}</b>`;
-      $('#moodMeta').textContent = total ? `共 ${total} 条` : '';
+      const stat = $('#moodStat');
+      if (stat) stat.innerHTML = total
+        ? `今日 <b>${total}</b> 条记录 · 占比最高
+           <b style="color:${topM ? topM.c : 'inherit'}">${topM.n} ${Math.round((top[1] / total) * 100)}%</b>`
+        : `今日暂无记录，点上方状态即可`;
+      const meta = $('#moodMeta');
+      if (meta) meta.textContent = total ? `今日 ${total} 条` : '';
     }
   }
 
