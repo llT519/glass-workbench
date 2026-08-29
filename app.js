@@ -132,9 +132,9 @@
 
   function renderNav() {
     $('#sideNav').innerHTML = VIEWS.map((v) =>
-      `<button type="button" data-view="${v.id}" class="${v.id === currentView ? 'active' : ''}"><span class="nav-ico">${v.icon}</span>${v.name}</button>`).join('');
+      `<button type="button" data-view="${v.id}" class="${v.id === currentView ? 'active' : ''}" aria-label="${v.name}"><span class="nav-ico">${v.icon}</span><span class="nav-label">${v.name}</span></button>`).join('');
     $('#tabbar').innerHTML = VIEWS.map((v) =>
-      `<button type="button" data-view="${v.id}" class="${v.id === currentView ? 'active' : ''}"><span class="nav-ico">${v.icon}</span>${v.name}</button>`).join('');
+      `<button type="button" data-view="${v.id}" class="${v.id === currentView ? 'active' : ''}"><span class="nav-ico">${v.icon}</span><span class="nav-label">${v.name}</span></button>`).join('');
     $$('#sideNav button, #tabbar button').forEach((btn) => {
       btn.addEventListener('click', () => switchView(btn.dataset.view));
     });
