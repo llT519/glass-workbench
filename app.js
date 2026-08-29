@@ -143,7 +143,6 @@
     db: I('<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.7-4 3-9 3s-9-1.3-9-3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/>'),
     box: I('<path d="M21 8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7z"/><path d="M3.3 7 12 12l8.7-5"/><path d="M12 22V12"/>'),
     gear: I('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.9 2.9l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.9-2.9l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.9-2.9l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5h.1a1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.9 2.9l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),
-    view3d: I('<path d="M21 8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7z"/><path d="M3.3 7 12 12l8.7-5"/><path d="M12 22V12"/>'),
     gearSm: I('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.9 2.9l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.9-2.9l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.9-2.9l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5h.1a1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.9 2.9l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>')
   };
 
@@ -250,7 +249,7 @@
       const px = e.clientX - r.left, py = e.clientY - r.top;
       card.style.setProperty('--mx', px.toFixed(1) + 'px');
       card.style.setProperty('--my', py.toFixed(1) + 'px');
-      // 轻微 3D 倾斜（±1.6deg），手机端忽略
+      // 轻微倾斜（±1.6deg），手机端忽略
       if (matchMedia('(hover:hover)').matches && innerWidth > 860) {
         const rx = ((py / r.height) - .5) * -3.2;
         const ry = ((px / r.width) - .5) * 3.2;
@@ -315,8 +314,6 @@
       }
     }
     setFluidCard('expense', { num: outSum, fmt: (n) => money(n), unit: '元', changeText: `本月收入 ${money(inSum)} 元` });
-    /* 数据变化同步镜像到 3D 视界卡片 */
-    if (typeof push3dCards === 'function') push3dCards();
   }
 
   /* ================= 时钟问候 ================= */
@@ -782,52 +779,6 @@
     });
   }
 
-  /* ================= 3D 视界：工作台数据镜像到卡片环 ================= */
-  function studyMaxStreak() {
-    return state.study.items.reduce((max, it) => Math.max(max, studyStreak(it.logs || {})), 0);
-  }
-  function build3dNotes() {
-    const t = todayStr();
-    const todoOpen = state.todos.filter((x) => !x.done).length;
-    const todoDone = state.todos.filter((x) => x.done).length;
-    const pomoToday = state.pomodoro.daily?.[t] || 0;
-    const due = vocabDue().length;
-    const mastered = state.vocab.words.filter((w) => w.done).length;
-    const month = t.slice(0, 7);
-    let outSum = 0, inSum = 0;
-    for (const r of state.ledger.records) {
-      if (!(r.date || '').startsWith(month)) continue;
-      if (r.type === 'expense') outSum += Number(r.amount) || 0; else inSum += Number(r.amount) || 0;
-    }
-    const jsDay = new Date().getDay();
-    const todaySlots = state.schedule[String(jsDay === 0 ? 7 : jsDay)] || [];
-    const activeGoals = state.goals.filter((g) => !g.done).length;
-    return [
-      { code: 'TODO',   name: '今日待办', count: todoOpen,  countText: `${todoOpen} 项待办`,      status: todoOpen ? '进行中' : '已清空' },
-      { code: 'DONE',   name: '今日完成', count: todoDone,  countText: `${todoDone} 项`,          status: '今日成果' },
-      { code: 'FOCUS',  name: '番茄专注', count: pomoToday, countText: `${pomoToday} 个番茄`,     status: pomoToday ? '持续专注' : '等待启动' },
-      { code: 'WORD',   name: '待复习',   count: due,       countText: `${due} 个单词`,           status: '遗忘曲线' },
-      { code: 'MASTER', name: '已掌握',   count: mastered,  countText: `${mastered} 个单词`,      status: '长期记忆' },
-      { code: 'OUT',    name: '本月支出', count: 0,         countText: `¥ ${money(outSum)}`,      status: '支出口径' },
-      { code: 'IN',     name: '本月收入', count: 0,         countText: `¥ ${money(inSum)}`,       status: '收入口径' },
-      { code: 'STUDY',  name: '学习项目', count: state.study.items.length, countText: `${state.study.items.length} 个进行中`, status: '学习进度' },
-      { code: 'GOAL',   name: '活跃目标', count: activeGoals, countText: `${activeGoals} 个目标`, status: '里程碑' },
-      { code: 'PLAN',   name: '今日安排', count: todaySlots.length, countText: `${todaySlots.length} 个时间块`, status: '时间表' },
-      { code: 'NOTE',   name: '便签',     count: state.notes.length, countText: `${state.notes.length} 张便签`, status: '灵感速记' },
-      { code: 'STREAK', name: '连续打卡', count: studyMaxStreak(), countText: `最长 ${studyMaxStreak()} 天`, status: '习惯养成' }
-    ];
-  }
-  function push3dCards() {
-    const notes = build3dNotes();
-    try {
-      if (!$('#threedOverlay').hidden) $('#threedFrame')?.contentWindow?.postMessage({ type: 'workbench-cards', notes }, '*');
-    } catch (_) {}
-  }
-  function open3d() {
-    $('#threedFrame').src = '三维卡片环/index.html';
-    $('#threedOverlay').hidden = false;
-    setTimeout(push3dCards, 700);
-  }
   function renderTodayAgenda() {
     const jsDay = new Date().getDay();
     const key = String(jsDay === 0 ? 7 : jsDay);
@@ -884,7 +835,7 @@
     });
   }
 
-  /* ================= 动态添加表单（学习/目标/导航/便签/3D） ================= */
+  /* ================= 动态添加表单（学习/目标/导航/便签） ================= */
   function bindAddForms() {
     $('#todoForm').addEventListener('submit', (e) => {
       e.preventDefault();
@@ -977,30 +928,41 @@
       toast('✓ 已记账');
     });
 
-    /* 3D 全屏模式：导航页入口 + 数据镜像 */
-    $('#open3dBtn').addEventListener('click', open3d);
-    $('#threedFrame').addEventListener('load', () => setTimeout(push3dCards, 400));
-    $('#close3dBtn').addEventListener('click', () => {
-      $('#threedOverlay').hidden = true;
-      $('#threedFrame').src = '';
-    });
   }
 
   /* ================= 状态与心情记录 ================= */
   const MOODS = [
+    { k: 'happy', n: '开心', c: '#ff9f0a', v: 5 },
     { k: 'flow',  n: '高效', c: '#0a84ff', v: 5 },
     { k: 'focus', n: '专注', c: '#34c759', v: 4 },
     { k: 'calm',  n: '平静', c: '#30b0c7', v: 3 },
     { k: 'tired', n: '疲惫', c: '#8e8e93', v: 2 },
-    { k: 'irr',   n: '烦躁', c: '#ff9f0a', v: 2 },
+    { k: 'irr',   n: '烦躁', c: '#e0673c', v: 2 },
     { k: 'down',  n: '低落', c: '#5e5ce6', v: 1 }
   ];
   const moodOf = (k) => MOODS.find((m) => m.k === k);
+  /* 今日心情总结：根据记录的状态生成一句话 */
+  function moodSummary(rec) {
+    if (!rec) return '今天还没记录状态，选一个贴切的心情吧';
+    const s = {
+      happy: '今天心情很好，把这份开心记下来，以后回顾时它会发光 ☀',
+      flow: '今天状态拉满！记住现在的节奏感，这就是你最高效的样子 🚀',
+      focus: '今天很专注，深度工作的感觉真好，明天试试同样的开始方式 🎯',
+      calm: '今天心态平稳，平稳本身就是一种高效，适合复盘与规划 🌊',
+      tired: '今天累了就早点休息，恢复也是学习节奏的一部分 🌙',
+      irr: '今天有些烦躁，出门走走或听首歌，别硬撑 🍃',
+      down: '今天情绪偏低，允许自己慢一点，明天会好一些 🫂'
+    };
+    return s[rec.m] || '已记录今天的状态';
+  }
 
   function renderMood() {
     const t = todayStr();
     const days = state.mood.days || {};
     const todayRec = days[t];
+    // 今日总结
+    const sum = $('#moodSummary');
+    if (sum) sum.textContent = moodSummary(days[t]);
     // 今日状态 chips
     const chips = $('#moodChips');
     if (chips) {
@@ -1139,7 +1101,6 @@
     renderMood();
     renderQuote();
     updateFluidCards();
-    push3dCards();
     initSpotlight();
   }
 
