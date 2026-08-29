@@ -3,23 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#020807">
-  <meta name="description" content="玻璃拟态个人工作台：待办、番茄钟、记账、学习进度、艾宾浩斯单词、目标与时间表，支持手机电脑云同步">
+  <meta name="theme-color" content="#eef1f8">
+  <meta name="description" content="玻璃工作台：待办、番茄钟、记账、学习进度、艾宾浩斯背单词、目标与时间表，手机电脑云同步">
   <title>玻璃工作台</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" href="icon-192.png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="stylesheet" href="styles.css?v=20260829b">
-  <link rel="stylesheet" href="vendor/fluid-glass-material.css?v=20260829b">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="stylesheet" href="styles.css?v=20260829c">
+  <link rel="stylesheet" href="vendor/fluid-glass-material.css?v=20260829c">
 </head>
-<body class="dg-canvas">
-  <!-- 登录门禁：账号或密码任一错误均无法进入；登录状态长期保存在本机 -->
+<body class="app-body">
+
+  <!-- 登录门禁：账号或密码任一错误均无法进入；登录后本机长期保持 -->
   <div class="login-gate" id="loginGate" hidden>
-    <form class="login-card dg-panel" id="loginForm" autocomplete="off">
-      <div class="brand">
-        <span class="brand-dot" aria-hidden="true"></span>
+    <form class="login-card" id="loginForm" autocomplete="off">
+      <div class="login-brand">
+        <span class="brand-dot"></span>
         <b>玻璃工作台</b>
         <small>GLASS WORKBENCH</small>
       </div>
@@ -31,71 +32,66 @@
         <input class="input" id="loginPass" type="password" placeholder="请输入密码" maxlength="40">
       </label>
       <p class="login-error" id="loginError" hidden>账号或密码错误，请重新输入</p>
-      <button class="btn primary wide" type="submit">进 入 工 作 台</button>
+      <button class="btn primary wide" type="submit">进入工作台</button>
       <p class="hint">仅限授权用户访问 · 登录后本机将保持登录状态</p>
     </form>
   </div>
 
-  <!-- 环境光层：由 Palette Engine 的 token 驱动 -->
   <div class="ambient" aria-hidden="true"></div>
 
-  <div class="app">
-    <!-- 桌面端侧栏 -->
-    <aside class="sidebar dg-panel">
-      <div class="brand">
-        <span class="brand-dot" aria-hidden="true"></span>
-        <b>玻璃工作台</b>
-        <small>GLASS WORKBENCH</small>
-      </div>
-      <nav class="side-nav" id="sideNav" aria-label="主导航"></nav>
-      <div class="sidebar-foot">
-        <div class="sync-chip" id="syncChip">
+  <div class="shell">
+    <!-- 悬浮 Dock 导航 -->
+    <aside class="dock">
+      <div class="dock-logo"><span class="brand-dot"></span><small>GW</small></div>
+      <nav class="dock-nav" id="sideNav" aria-label="主导航"></nav>
+      <div class="dock-foot">
+        <div class="sync-chip" id="syncChip" title="云同步状态">
           <span class="sync-dot" id="syncDot" data-state="off"></span>
-          <span id="syncText">本地模式</span>
+          <span class="sync-label" id="syncText">本地模式</span>
         </div>
-        <button class="btn ghost" id="openSettingsBtn" type="button" aria-label="系统设置" title="系统设置"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.9 2.9l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.9-2.9l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.9-2.9l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5h.1a1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.9 2.9l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+        <button class="dock-btn" id="openSettingsBtn" type="button" aria-label="系统设置" title="系统设置"></button>
       </div>
     </aside>
 
-    <!-- 主区域 -->
-    <div class="main">
-      <header class="topbar">
-        <div class="topbar-title">
+    <!-- 主内容区 -->
+    <main class="content">
+      <header class="page-head">
+        <div class="page-head-left">
           <h1 id="viewTitle">概览</h1>
-          <span class="topbar-sub" id="topbarClock">--:--</span>
+          <p class="page-date" id="topbarClock">--</p>
         </div>
-        <div class="topbar-actions">
-          <span class="sync-chip mobile-only" id="syncChipM">
+        <div class="page-head-right">
+          <span class="sync-chip sync-chip-mobile" id="syncChipM">
             <span class="sync-dot" id="syncDotM" data-state="off"></span>
           </span>
-          <button class="btn ghost icon-btn" id="openSettingsBtnM" type="button" aria-label="设置"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.9 2.9l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.9-2.9l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.9-2.9l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5h.1a1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.9 2.9l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+          <button class="icon-btn" id="openSettingsBtnM" type="button" aria-label="设置"></button>
         </div>
       </header>
 
-      <main class="views" id="views">
+      <div class="views" id="views">
 
         <!-- ① 概览 -->
         <section class="view" data-view="overview">
-          <div class="hero dg-panel">
-            <div class="hero-left">
+          <div class="bento">
+            <div class="card hero-card span-8">
               <div class="hero-clock"><span id="clockTime">--:--</span><small id="clockSec">--</small></div>
-              <div class="hero-date" id="clockDate">加载中…</div>
+              <div class="hero-meta">
+                <div class="hero-greet" id="heroGreet">你好</div>
+                <div class="hero-greet-sub" id="heroGreetSub">欢迎回来</div>
+                <div class="hero-date" id="clockDate">加载中…</div>
+              </div>
             </div>
-            <div class="hero-right">
-              <div class="hero-greet" id="heroGreet">你好</div>
-              <div class="hero-greet-sub" id="heroGreetSub">欢迎回来</div>
+            <div class="card agenda-card span-4" data-tint="blue">
+              <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 17v5"/><path d="M9 10.8a2 2 0 0 1-1.1 1.8l-1.8.9A2 2 0 0 0 5 15.3V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.7a2 2 0 0 0-1.1-1.8l-1.8-.9A2 2 0 0 1 15 10.8V7h1a2 2 0 0 0 2-2V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v1a2 2 0 0 0 2 2h1z"/></svg></span>今日安排</h2><span class="card-meta" id="agendaMeta"></span></div>
+              <div class="card-body" id="todayAgenda"></div>
             </div>
-          </div>
 
-          <!-- 流体玻璃指标卡（WebGL canonical 内核渲染） -->
-          <div class="fg-grid" id="fluidGlassGrid" aria-label="今日数据指标"></div>
+            <div class="fg-grid span-12" id="fluidGlassGrid" aria-label="今日数据指标"></div>
 
-          <div class="card-grid">
-            <!-- 3D 视界：亚克力卡片环直接嵌入仪表盘，实时镜像工作台数据 -->
-            <div class="card dg-card span-7 threed-embed-card">
+            <div class="card threed-embed-card span-7">
               <div class="card-head">
                 <h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7z"/><path d="M3.3 7 12 12l8.7-5"/><path d="M12 22V12"/></svg></span>3D 视界</h2>
-                <span class="card-meta">拖动旋转 · 滚轮缩放 · 点击卡片居中</span>
+                <span class="card-meta">拖动旋转 · 滚轮缩放</span>
                 <button class="btn ghost small" id="embed3dFullscreen" type="button">⤢ 全屏</button>
               </div>
               <div class="threed-embed">
@@ -103,7 +99,7 @@
               </div>
             </div>
 
-            <div class="card dg-card span-5" data-tint="cyan">
+            <div class="card span-5" data-tint="cyan">
               <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/><path d="m9 11 3 3L22 4"/></svg></span>待办清单</h2><span class="card-meta" id="todoMeta"></span></div>
               <div class="card-body todo-body">
                 <form class="inline-form" id="todoForm">
@@ -111,13 +107,11 @@
                   <button class="btn primary" type="submit">添加</button>
                 </form>
                 <ul class="todo-list" id="todoList"></ul>
-                <div class="row-foot">
-                  <button class="btn ghost small" id="todoClearDone" type="button">清除已完成</button>
-                </div>
+                <div class="row-foot"><button class="btn ghost small" id="todoClearDone" type="button">清除已完成</button></div>
               </div>
             </div>
 
-            <div class="card dg-card span-4" data-tint="amber">
+            <div class="card span-4" data-tint="amber">
               <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2h4"/><circle cx="12" cy="14" r="8"/><path d="M12 14v-4"/></svg></span>番茄钟</h2><span class="card-meta" id="pomoMeta"></span></div>
               <div class="card-body pomo-body">
                 <div class="pomo-ring">
@@ -140,12 +134,7 @@
               </div>
             </div>
 
-            <div class="card dg-card span-4" data-tint="blue">
-              <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 17v5"/><path d="M9 10.8a2 2 0 0 1-1.1 1.8l-1.8.9A2 2 0 0 0 5 15.3V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.7a2 2 0 0 0-1.1-1.8l-1.8-.9A2 2 0 0 1 15 10.8V7h1a2 2 0 0 0 2-2V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v1a2 2 0 0 0 2 2h1z"/></svg></span>今日安排</h2><span class="card-meta" id="agendaMeta"></span></div>
-              <div class="card-body" id="todayAgenda"></div>
-            </div>
-
-            <div class="card dg-card span-4" data-tint="violet">
+            <div class="card span-8" data-tint="violet">
               <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9l7-7V5a2 2 0 0 0-2-2z"/><path d="M15 21v-5a2 2 0 0 1 2-2h5"/></svg></span>便签</h2><button class="btn ghost small" id="noteAdd" type="button">+ 新便签</button></div>
               <div class="card-body note-body" id="noteList"></div>
             </div>
@@ -154,13 +143,12 @@
 
         <!-- ② 学习 -->
         <section class="view" data-view="study" hidden>
-          <div class="card-grid">
-            <div class="card dg-card span-4" data-tint="violet">
+          <div class="bento">
+            <div class="card span-4" data-tint="violet">
               <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 7-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/></svg></span>学习进度</h2><button class="btn ghost small" id="studyAdd" type="button">+ 新项目</button></div>
               <div class="card-body" id="studyList"></div>
             </div>
-
-            <div class="card dg-card span-5" data-tint="cyan">
+            <div class="card span-5" data-tint="cyan">
               <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>艾宾浩斯背单词</h2><span class="card-meta" id="vocabMeta"></span></div>
               <div class="card-body vocab-body">
                 <form class="inline-form" id="vocabForm">
@@ -169,15 +157,12 @@
                   <button class="btn primary" type="submit">加入词库</button>
                 </form>
                 <div class="vocab-review" id="vocabReview"></div>
-                <div class="row-foot">
-                  <button class="btn ghost small" id="vocabToggleList" type="button">查看词库</button>
-                </div>
+                <div class="row-foot"><button class="btn ghost small" id="vocabToggleList" type="button">查看词库</button></div>
                 <ul class="vocab-list" id="vocabList" hidden></ul>
               </div>
             </div>
-
-            <div class="card dg-card span-3" data-tint="amber">
-              <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>每周时间表</h2><button class="btn ghost small" id="ttAdd" type="button">+ 添加安排</button></div>
+            <div class="card span-3" data-tint="amber">
+              <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>每周时间表</h2><button class="btn ghost small" id="ttAdd" type="button">+ 安排</button></div>
               <div class="card-body tt-body" id="timetable"></div>
             </div>
           </div>
@@ -185,8 +170,8 @@
 
         <!-- ③ 记账 -->
         <section class="view" data-view="ledger" hidden>
-          <div class="card-grid">
-            <div class="card dg-card span-4" data-tint="amber">
+          <div class="bento">
+            <div class="card span-4" data-tint="amber">
               <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg></span>快速记一笔</h2></div>
               <div class="card-body">
                 <form id="ledgerForm" class="ledger-form">
@@ -206,29 +191,25 @@
                 </form>
               </div>
             </div>
-
-            <div class="card dg-card span-4" data-tint="cyan">
+            <div class="card span-4" data-tint="cyan">
               <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20v-9"/><path d="M18 20V5"/><path d="M6 20v-5"/></svg></span>本月统计</h2><span class="card-meta" id="ledgerMonthMeta"></span></div>
               <div class="card-body" id="ledgerStats"></div>
             </div>
-
-            <div class="card dg-card span-4" data-tint="violet">
+            <div class="card span-4" data-tint="violet">
               <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1z"/><path d="M8 7h8"/><path d="M8 11h8"/></svg></span>记录</h2><span class="card-meta" id="ledgerListMeta"></span></div>
-              <div class="card-body">
-                <ul class="ledger-list" id="ledgerList"></ul>
-              </div>
+              <div class="card-body"><ul class="ledger-list" id="ledgerList"></ul></div>
             </div>
           </div>
         </section>
 
         <!-- ④ 目标 -->
         <section class="view" data-view="goals" hidden>
-          <div class="card-grid">
-            <div class="card dg-card span-7" data-tint="rose">
+          <div class="bento">
+            <div class="card span-7" data-tint="rose">
               <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></span>目标</h2><button class="btn ghost small" id="goalAdd" type="button">+ 新目标</button></div>
               <div class="card-body" id="goalList"></div>
             </div>
-            <div class="card dg-card span-5" data-tint="cyan">
+            <div class="card span-5" data-tint="cyan">
               <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3 1.1-2.1 2.5-3.5 4.5-4.5-.9 2.5-.4 4 .6 5.5a6 6 0 1 1-10 4c0-1 .5-2 1.5-3z"/></svg></span>近 7 天完成</h2></div>
               <div class="card-body" id="weekStats"></div>
             </div>
@@ -237,21 +218,19 @@
 
         <!-- ⑤ 导航 -->
         <section class="view" data-view="nav" hidden>
-          <div class="card-grid">
-            <div class="card dg-card span-5" data-tint="blue">
-              <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16.2 7.8-2.1 6.3-6.3 2.1 2.1-6.3z"/></svg></span>快捷导航</h2><button class="btn ghost small" id="navAdd" type="button">+ 添加网址</button></div>
-              <div class="card-body">
-                <div class="navgrid" id="navGrid"></div>
-              </div>
+          <div class="bento">
+            <div class="card span-5" data-tint="blue">
+              <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16.2 7.8-2.1 6.3-6.3 2.1 2.1-6.3z"/></svg></span>快捷导航</h2><button class="btn ghost small" id="navAdd" type="button">+ 添加</button></div>
+              <div class="card-body"><div class="navgrid" id="navGrid"></div></div>
             </div>
-            <div class="card dg-card span-4 threed-card" data-tint="violet">
+            <div class="card span-4 threed-card" data-tint="violet">
               <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7z"/><path d="M3.3 7 12 12l8.7-5"/><path d="M12 22V12"/></svg></span>3D 卡片环</h2></div>
               <div class="card-body threed-body">
                 <p>进入三维环绕的亚克力卡片展示模式，可拖动旋转、滚轮缩放，卡片颜色与文字均可自定义。</p>
                 <button class="btn primary wide" id="open3dBtn" type="button">进入 3D 模式</button>
               </div>
             </div>
-            <div class="card dg-card span-3" data-tint="slate">
+            <div class="card span-3" data-tint="slate">
               <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.7-4 3-9 3s-9-1.3-9-3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/></svg></span>数据</h2></div>
               <div class="card-body data-body">
                 <button class="btn ghost wide" id="exportBtn" type="button">导出全部数据（JSON）</button>
@@ -263,19 +242,19 @@
           </div>
         </section>
 
-      </main>
-    </div>
+      </div>
+    </main>
   </div>
 
-  <!-- 手机端底部标签栏 -->
+  <!-- 手机端底部导航 -->
   <nav class="tabbar" id="tabbar" aria-label="底部导航"></nav>
 
-  <!-- 系统设置弹窗 -->
+  <!-- 系统设置 -->
   <div class="modal-backdrop" id="settingsBackdrop" hidden>
-    <div class="modal dg-panel" role="dialog" aria-label="系统设置">
+    <div class="modal" role="dialog" aria-label="系统设置">
       <div class="modal-head">
-        <h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.9 2.9l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.9-2.9l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.9-2.9l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5h.1a1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.9 2.9l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>系统设置</h2>
-        <button class="btn ghost icon-btn" id="settingsClose" type="button" aria-label="关闭">✕</button>
+        <h2>系统设置</h2>
+        <button class="icon-btn" id="settingsClose" type="button" aria-label="关闭">✕</button>
       </div>
       <div class="modal-body">
         <fieldset class="fieldset">
@@ -298,7 +277,7 @@
         </fieldset>
         <fieldset class="fieldset">
           <legend>云同步（Supabase）</legend>
-          <p class="hint">三台设备填写同一份「同步码」即可互相同步。配置方法见《云同步配置指南》。</p>
+          <p class="hint">所有设备填写同一份「同步码」即可互相同步。配置方法见《云同步配置指南》。</p>
           <label class="field-label">项目 URL<input class="input" id="optSyncUrl" type="url" placeholder="https://xxxx.supabase.co"></label>
           <label class="field-label">Anon Key<input class="input" id="optSyncKey" type="password" placeholder="eyJhbGciOi…"></label>
           <label class="field-label">同步码<input class="input" id="optSyncCode" type="text" placeholder="自定义一串只有你知道的字符"></label>
@@ -312,7 +291,7 @@
     </div>
   </div>
 
-  <!-- 3D 卡片环全屏遮罩 -->
+  <!-- 3D 全屏模式 -->
   <div class="threed-overlay" id="threedOverlay" hidden>
     <div class="threed-bar">
       <button class="btn primary" id="close3dBtn" type="button">← 返回工作台</button>
@@ -324,27 +303,22 @@
   <div class="toast" id="toast" role="status"></div>
 
   <script>
-    /* 流体玻璃指标卡配置：storageKey 与工作台隔离；每卡 A/B/C 采用技能开放的业务配色位（内核不变） */
     window.FLUID_GLASS_CONFIG = {
       storageKey: 'workbench_fluid_v2',
       quality: 'auto',
       interaction: true,
       cards: [
-        { key: 'todo',    label: '今日待办', eyebrow: 'TODO · TODAY',       value: '0', unit: '项', change: 0,
-          preset: 'original', a: '#ff3aa7', b: '#ff8050', c: '#5f2b78', surface: 0.42 },
-        { key: 'pomo',    label: '番茄专注', eyebrow: 'FOCUS · POMODORO',   value: '0', unit: '个', change: 0,
-          preset: 'cyan', a: '#00e7d2', b: '#3cc8ff', c: '#075f68', surface: 0.42 },
-        { key: 'vocab',   label: '待复习',   eyebrow: 'MEMORY · EBINGHAUS', value: '0', unit: '词', change: 0,
-          preset: 'custom', a: '#a47bff', b: '#6ec6ff', c: '#2f2a68', surface: 0.42 },
-        { key: 'expense', label: '本月支出', eyebrow: 'SPENDING · MONTH',   value: '0', unit: '元', change: 0,
-          preset: 'custom', a: '#8fd3c7', b: '#d9efe8', c: '#2f4f4a', surface: 0.42 }
+        { key: 'todo',    label: '今日待办', eyebrow: 'TODO · TODAY',       value: '0', unit: '项', change: 0, preset: 'original', a: '#ff3aa7', b: '#ff8050', c: '#5f2b78', surface: 0.42 },
+        { key: 'pomo',    label: '番茄专注', eyebrow: 'FOCUS · POMODORO',   value: '0', unit: '个', change: 0, preset: 'cyan',     a: '#00e7d2', b: '#3cc8ff', c: '#075f68', surface: 0.42 },
+        { key: 'vocab',   label: '待复习',   eyebrow: 'MEMORY · EBINGHAUS', value: '0', unit: '词', change: 0, preset: 'custom',   a: '#a47bff', b: '#6ec6ff', c: '#2f2a68', surface: 0.42 },
+        { key: 'expense', label: '本月支出', eyebrow: 'SPENDING · MONTH',   value: '0', unit: '元', change: 0, preset: 'custom',   a: '#8fd3c7', b: '#d9efe8', c: '#2f4f4a', surface: 0.42 }
       ]
     };
   </script>
-  <script src="vendor/palette-engine.js?v=20260829b"></script>
-  <script src="vendor/palette-presets.js?v=20260829b"></script>
-  <script src="sync.js?v=20260829b"></script>
-  <script src="vendor/fluid-glass-engine.js?v=20260829b"></script>
-  <script src="app.js?v=20260829b"></script>
+  <script src="vendor/palette-engine.js?v=20260829c"></script>
+  <script src="vendor/palette-presets.js?v=20260829c"></script>
+  <script src="sync.js?v=20260829c"></script>
+  <script src="vendor/fluid-glass-engine.js?v=20260829c"></script>
+  <script src="app.js?v=20260829c"></script>
 </body>
 </html>
