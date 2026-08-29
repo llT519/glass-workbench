@@ -881,7 +881,6 @@
   function push3dCards() {
     const notes = build3dNotes();
     try {
-      $('#threedEmbedFrame')?.contentWindow?.postMessage({ type: 'workbench-cards', notes }, '*');
       if (!$('#threedOverlay').hidden) $('#threedFrame')?.contentWindow?.postMessage({ type: 'workbench-cards', notes }, '*');
     } catch (_) {}
   }
@@ -1039,15 +1038,40 @@
       toast('✓ 已记账');
     });
 
-    /* 3D 模式：嵌入版常驻概览页，这里处理全屏入口与数据桥 */
+    /* 3D 全屏模式：导航页入口 + 数据镜像 */
     $('#open3dBtn').addEventListener('click', open3d);
-    $('#embed3dFullscreen').addEventListener('click', open3d);
-    $('#threedEmbedFrame').addEventListener('load', () => setTimeout(push3dCards, 400));
     $('#threedFrame').addEventListener('load', () => setTimeout(push3dCards, 400));
     $('#close3dBtn').addEventListener('click', () => {
       $('#threedOverlay').hidden = true;
       $('#threedFrame').src = '';
     });
+  }
+
+  /* ================= 今日节奏（Apple 活动环） ================= */
+  function setRing(sel, pct, c) {
+    const el = $(sel);
+    if (!el) return;
+    const p = Math.min(1, Math.max(0, pct || 0));
+    el.style.strokeDasharray = c.toFixed(1);
+    el.style.strokeDashoffset = (c * (1 - p)).toFixed(1);
+  }
+  function renderRhythm() {
+    const t = todayStr();
+    const todoDone = state.todos.filter((x) => x.done).length;
+    const todoTotal = state.todos.length;
+    const pomoToday = state.pomodoro.daily?.[t] || 0;
+    const mastered = state.vocab.words.filter((w) => w.done).length;
+    const vocabTotal = state.vocab.words.length;
+    setRing('#ringTodo', todoTotal ? todoDone / todoTotal : 0, 2 * Math.PI * 52);
+    setRing('#ringPomo', Math.min(1, pomoToday / 4), 2 * Math.PI * 40);
+    setRing('#ringVocab', vocabTotal ? mastered / vocabTotal : 0, 2 * Math.PI * 28);
+    const pct = todoTotal ? Math.round((todoDone / todoTotal) * 100) : 0;
+    const pctEl = $('#rhythmPct');
+    if (pctEl) pctEl.textContent = pct + '%';
+    const rl = [['#rlTodo', `${todoDone}/${todoTotal}`], ['#rlPomo', `${pomoToday} 个`], ['#rlVocab', `${mastered}/${vocabTotal} 词`]];
+    rl.forEach(([sel, txt]) => { const el = $(sel); if (el) el.textContent = txt; });
+    const meta = $('#rhythmMeta');
+    if (meta) meta.textContent = '番茄日目标 4 个';
   }
 
   /* ================= 全量渲染 ================= */
@@ -1062,6 +1086,7 @@
     renderWeekStats();
     renderNavGrid();
     renderTodayAgenda();
+    renderRhythm();
     $('#pomoMeta').textContent = `今日 ${state.pomodoro.daily?.[todayStr()] || 0} 个`;
     updateFluidCards();
     push3dCards();
