@@ -204,11 +204,64 @@
     });
   }
 
+  /* ================= 视觉增强：光晕跟随 + 卡片微倾斜 ================= */
+  function initSpotlight() {
+    const cards = $$('.card');
+    cards.forEach((c) => {
+      if (!c.querySelector(':scope > .spot')) {
+        const s = document.createElement('i');
+        s.className = 'spot';
+        s.setAttribute('aria-hidden', 'true');
+        c.appendChild(s);
+      }
+    });
+    if (window.__spotBound) return;
+    window.__spotBound = true;
+    document.addEventListener('pointermove', (e) => {
+      const card = e.target && e.target.closest ? e.target.closest('.card') : null;
+      if (!card || !card.isConnected) return;
+      const r = card.getBoundingClientRect();
+      const px = e.clientX - r.left, py = e.clientY - r.top;
+      card.style.setProperty('--mx', px.toFixed(1) + 'px');
+      card.style.setProperty('--my', py.toFixed(1) + 'px');
+      // 轻微 3D 倾斜（±1.6deg），手机端忽略
+      if (matchMedia('(hover:hover)').matches && innerWidth > 860) {
+        const rx = ((py / r.height) - .5) * -3.2;
+        const ry = ((px / r.width) - .5) * 3.2;
+        card.style.setProperty('--rx', rx.toFixed(2) + 'deg');
+        card.style.setProperty('--ry', ry.toFixed(2) + 'deg');
+      }
+    }, { passive: true });
+  }
+
   /* ================= 流体玻璃指标卡 ================= */
-  function setFluidCard(key, { value, unit, changeText, positive }) {
+  /* 数值滚动动画：从旧值插值到新值 */
+  function animateNum(el, from, to, fmt) {
+    if (from === to) { el.textContent = fmt(to); return; }
+    const start = performance.now(), dur = 550;
+    const step = (now) => {
+      const t = Math.min(1, (now - start) / dur);
+      const eased = 1 - Math.pow(1 - t, 3);
+      el.textContent = fmt(from + (to - from) * eased);
+      if (t < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+  function setFluidCard(key, { num, fmt = (n) => String(Math.round(n)), text, unit, changeText, positive }) {
     const el = document.querySelector(`[data-fluid-glass-key="${key}"]`);
     if (!el) return;
-    if (value !== undefined) $('.fg-value', el).textContent = value;
+    if (num !== undefined) {
+      const vEl = $('.fg-value', el);
+      const to = Number(num);
+      const from = Number(vEl.dataset.v || 0);
+      if (Number.isFinite(to) && Number.isFinite(from)) {
+        animateNum(vEl, from, to, fmt);
+      } else {
+        vEl.textContent = fmt(to);
+      }
+      vEl.dataset.v = String(to);
+    }
+    if (text !== undefined) $('.fg-value', el).textContent = text;
     if (unit !== undefined) $('.fg-unit', el).textContent = unit;
     if (changeText !== undefined) {
       $('.fg-change', el).innerHTML = `<span class="${positive === false ? 'fg-change-negative' : 'fg-change-positive'}">${esc(changeText)}</span>`;
@@ -219,14 +272,14 @@
     const t = todayStr();
     const doneCount = state.todos.filter((x) => x.done).length;
     const rate = state.todos.length ? Math.round((doneCount / state.todos.length) * 100) : 0;
-    setFluidCard('todo', { value: String(doneCount), unit: `项 · 共 ${state.todos.length}`, changeText: `完成率 ${rate}%` });
+    setFluidCard('todo', { num: doneCount, fmt: (n) => String(Math.round(n)), unit: `项 · 共 ${state.todos.length}`, changeText: `完成率 ${rate}%` });
 
     const pomoToday = state.pomodoro.daily?.[t] || 0;
-    setFluidCard('pomo', { value: String(pomoToday), unit: '个', changeText: `今日第 ${pomoToday} 个番茄` });
+    setFluidCard('pomo', { num: pomoToday, fmt: (n) => String(Math.round(n)), unit: '个', changeText: `今日第 ${pomoToday} 个番茄` });
 
     const due = vocabDue().length;
     const mastered = state.vocab.words.filter((w) => w.done).length;
-    setFluidCard('vocab', { value: String(due), unit: '词', changeText: `已掌握 ${mastered} 词` });
+    setFluidCard('vocab', { num: due, fmt: (n) => String(Math.round(n)), unit: '词', changeText: `已掌握 ${mastered} 词` });
 
     const month = t.slice(0, 7);
     let outSum = 0, inSum = 0;
@@ -235,7 +288,7 @@
         if (r.type === 'expense') outSum += Number(r.amount) || 0; else inSum += Number(r.amount) || 0;
       }
     }
-    setFluidCard('expense', { value: money(outSum), unit: '元', changeText: `本月收入 ${money(inSum)} 元` });
+    setFluidCard('expense', { num: outSum, fmt: (n) => money(n), unit: '元', changeText: `本月收入 ${money(inSum)} 元` });
     /* 数据变化同步镜像到 3D 视界卡片 */
     if (typeof push3dCards === 'function') push3dCards();
   }
@@ -987,6 +1040,7 @@
     $('#pomoMeta').textContent = `今日 ${state.pomodoro.daily?.[todayStr()] || 0} 个`;
     updateFluidCards();
     push3dCards();
+    initSpotlight();
   }
 
   /* ================= PWA ================= */
