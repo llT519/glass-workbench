@@ -180,6 +180,10 @@
     const v = VIEWS.find((x) => x.id === id);
     $('#viewTitle').textContent = v.title;
     $$('#sideNav button, #tabbar button').forEach((btn) => btn.classList.toggle('active', btn.dataset.view === id));
+    /* 每次进入学习页都重新读取真实今日，重绘14天时间轴（跨天自动更新） */
+    if (id === 'study' && $('#recallAxis')) {
+      renderRecall();
+    }
   }
 
   /* ================= 调色引擎（浅色主题：强调色系统） ================= */
@@ -1466,6 +1470,27 @@
     window.__rs = window.__rs || []; try { initSpotlight(); } catch (e) { window.__rs.push('FAIL:' + name + ':' + e.message); throw e; } window.__rs.push(name);
   }
 
+  /* ================= 跨天实时刷新 ================= */
+  let dayWatcher = null;
+  function startDayWatcher() {
+    if (dayWatcher) return;
+    let lastDay = todayStr();
+    dayWatcher = setInterval(() => {
+      const now = todayStr();
+      if (now !== lastDay) {
+        lastDay = now;
+        /* 日期已变：重绘时间轴/概览/节奏环/心情/指标卡 */
+        if ($('#recallAxis')) renderRecall();
+        if (typeof renderRhythm === 'function') renderRhythm();
+        if (typeof renderMood === 'function') renderMood();
+        if (typeof renderTodayAgenda === 'function') renderTodayAgenda();
+        if (typeof updateFluidCards === 'function') updateFluidCards();
+        if (typeof renderQuote === 'function') renderQuote();
+        toast('新的一天开始啦，视图已更新');
+      }
+    }, 30000);
+  }
+
   /* ================= PWA ================= */
   function registerSW() {
     if (!('serviceWorker' in navigator)) return;
@@ -1534,6 +1559,8 @@
         Sync.startPolling();
         Sync.pollOnce(false).catch(() => {});
       }
+      /* 跨天实时刷新：30秒检查一次真实日期，变化则重绘所有日期相关组件 */
+      startDayWatcher();
     } catch (e) {
       console.error('INIT 失败:', e);
       const st = (e && e.stack ? e.stack : '').split(String.fromCharCode(10));
