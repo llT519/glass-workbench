@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#eef1f8">
+  <meta name="theme-color" content="#dce4f5">
   <meta name="description" content="玻璃工作台：待办、番茄钟、记账、学习进度、艾宾浩斯背单词、目标与时间表，手机电脑云同步">
   <title>玻璃工作台</title>
   <link rel="manifest" href="manifest.json">
@@ -122,26 +122,15 @@
                 <div class="row-foot"><button class="btn ghost small" id="todoClearDone" type="button">清除已完成</button></div>
               </div>
             </div>
-
-            <div class="card span-4" data-tint="rose">
-              <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2h4"/><circle cx="12" cy="14" r="8"/><path d="M12 14v-4"/></svg></span>番茄钟</h2><span class="card-meta" id="pomoMeta"></span></div>
-              <div class="card-body pomo-body">
-                <div class="pomo-ring">
-                  <svg viewBox="0 0 120 120" aria-hidden="true">
-                    <circle class="ring-bg" cx="60" cy="60" r="52"></circle>
-                    <circle class="ring-fg" id="pomoRing" cx="60" cy="60" r="52"></circle>
-                  </svg>
-                  <div class="pomo-time" id="pomoTime">25:00</div>
-                  <div class="pomo-mode" id="pomoMode">专注</div>
-                </div>
-                <div class="pomo-controls">
-                  <button class="btn primary" id="pomoStart" type="button">开始</button>
-                  <button class="btn ghost" id="pomoReset" type="button">重置</button>
-                  <button class="btn ghost" id="pomoSkip" type="button">跳过休息</button>
-                </div>
-                <div class="pomo-config">
-                  <label>专注 <input class="input num" id="pomoWork" type="number" min="5" max="90" value="25"> 分</label>
-                  <label>休息 <input class="input num" id="pomoRest" type="number" min="1" max="30" value="5"> 分</label>
+            <div class="card span-4" data-tint="blue">
+              <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01M15 9h.01"/></svg></span>状态与心情</h2><span class="card-meta" id="moodMeta"></span></div>
+              <div class="card-body mood-body">
+                <div class="mood-chips" id="moodChips"></div>
+                <div class="mood-chart-title">近 14 天状态</div>
+                <div class="mood-bars" id="moodBars"></div>
+                <div class="mood-pie-row">
+                  <span class="mood-pie" id="moodPie"></span>
+                  <div class="mood-stat" id="moodStat"></div>
                 </div>
               </div>
             </div>
@@ -149,6 +138,15 @@
             <div class="card span-8" data-tint="violet">
               <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9l7-7V5a2 2 0 0 0-2-2z"/><path d="M15 21v-5a2 2 0 0 1 2-2h5"/></svg></span>便签</h2><button class="btn ghost small" id="noteAdd" type="button">+ 新便签</button></div>
               <div class="card-body note-body" id="noteList"></div>
+            </div>
+
+            <div class="card quote-card span-12" data-tint="violet">
+              <div class="quote-inner" id="quoteCard" title="点击换一句">
+                <div class="quote-mark">“</div>
+                <p class="quote-text" id="quoteText"></p>
+                <p class="quote-meta" id="quoteMeta"></p>
+                <p class="quote-tip">轻触换一句 · 每 5 分钟自动轮换</p>
+              </div>
             </div>
           </div>
         </section>
@@ -331,6 +329,7 @@
   <script src="vendor/palette-presets.js?v=20260829c"></script>
   <script src="sync.js?v=20260829c"></script>
   <script src="vendor/fluid-glass-engine.js?v=20260829c"></script>
+  <script src="quotes.js?v=20260829c"></script>
   <script src="app.js?v=20260829c"></script>
 </body>
 </html>
