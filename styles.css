@@ -630,7 +630,7 @@ input[type="date"].input { color-scheme:light; }
 }
 @media (max-width:860px) {
   .dock { display:none; }
-  .content { padding:14px 16px 92px; }
+  .content { padding:calc(14px + env(safe-area-inset-top)) 16px 92px; }
   .tabbar { display:grid; }
   .page-head-left h1 { font-size:24px; }
   .tt-week { grid-template-columns:1fr; }
