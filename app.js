@@ -28,13 +28,14 @@
   /* ================= 状态管理 ================= */
   const STORE_KEY = 'workbench_state_v1';
   const TS_KEY = 'workbench_module_ts_v1';
-  const MODULES = ['settings', 'profile', 'todos', 'pomodoro', 'notes', 'navLinks', 'ledger', 'study', 'vocab', 'goals', 'schedule'];
+  const MODULES = ['settings', 'profile', 'todos', 'pomodoro', 'mood', 'notes', 'navLinks', 'ledger', 'study', 'vocab', 'goals', 'schedule'];
 
   const DEFAULT_STATE = {
     settings: { palette: 'US-00', intensity: .55, ambientStrength: .42, surfaceTint: .28, fluidQuality: 'auto' },
     profile: { name: '' },
     todos: [],
     pomodoro: { workMin: 25, restMin: 5, daily: {} },
+    mood: { days: {} },
     notes: [],
     navLinks: [
       { id: 'n1', name: 'Bing 搜索', url: 'https://www.bing.com' },
@@ -369,69 +370,7 @@
     }));
   }
 
-  /* ================= 番茄钟 ================= */
-  const POMO_RING_C = 326.7;
-  let pomo = { mode: 'work', remain: 25 * 60, total: 25 * 60, running: false, timer: 0 };
-  function pomoDuration() { return (pomo.mode === 'work' ? state.pomodoro.workMin : state.pomodoro.restMin) * 60; }
-  function pomoPaint() {
-    $('#pomoTime').textContent = `${pad(Math.floor(pomo.remain / 60))}:${pad(pomo.remain % 60)}`;
-    $('#pomoMode').textContent = pomo.mode === 'work' ? '专注' : '休息';
-    $('#pomoRing').style.strokeDashoffset = String(POMO_RING_C * (1 - pomo.remain / Math.max(pomo.total, 1)));
-    $('.pomo-ring').classList.toggle('rest', pomo.mode === 'rest');
-    $('#pomoStart').textContent = pomo.running ? '暂停' : '开始';
-  }
-  function pomoTick() {
-    pomo.remain--;
-    if (pomo.remain <= 0) {
-      if (pomo.mode === 'work') {
-        const t = todayStr();
-        state.pomodoro.daily[t] = (state.pomodoro.daily[t] || 0) + 1;
-        saveModule('pomodoro');
-        updateFluidCards(); renderWeekStats();
-        toast('🍅 完成一个番茄！休息一下');
-        pomo.mode = 'rest';
-      } else {
-        toast('休息结束，开始新的专注');
-        pomo.mode = 'work';
-      }
-      pomo.total = pomoDuration();
-      pomo.remain = pomo.total;
-    }
-    pomoPaint();
-  }
-  function bindPomo() {
-    $('#pomoStart').addEventListener('click', () => {
-      pomo.running = !pomo.running;
-      clearInterval(pomo.timer);
-      if (pomo.running) pomo.timer = setInterval(pomoTick, 1000);
-      pomoPaint();
-    });
-    $('#pomoReset').addEventListener('click', () => {
-      clearInterval(pomo.timer);
-      pomo.running = false; pomo.mode = 'work';
-      pomo.total = pomoDuration(); pomo.remain = pomo.total;
-      pomoPaint();
-    });
-    $('#pomoSkip').addEventListener('click', () => {
-      clearInterval(pomo.timer);
-      pomo.running = false; pomo.mode = 'work';
-      pomo.total = pomoDuration(); pomo.remain = pomo.total;
-      pomoPaint();
-    });
-    const wk = $('#pomoWork'), rs = $('#pomoRest');
-    wk.value = state.pomodoro.workMin; rs.value = state.pomodoro.restMin;
-    const onCfg = () => {
-      state.pomodoro.workMin = Math.min(90, Math.max(5, Number(wk.value) || 25));
-      state.pomodoro.restMin = Math.min(30, Math.max(1, Number(rs.value) || 5));
-      wk.value = state.pomodoro.workMin; rs.value = state.pomodoro.restMin;
-      saveModule('pomodoro');
-      if (!pomo.running && pomo.mode === 'work') { pomo.total = pomoDuration(); pomo.remain = pomo.total; pomoPaint(); }
-    };
-    wk.addEventListener('change', onCfg); rs.addEventListener('change', onCfg);
-    $('#pomoMeta').textContent = `今日 ${state.pomodoro.daily?.[todayStr()] || 0} 个`;
-    pomo.total = pomoDuration(); pomo.remain = pomo.total;
-    pomoPaint();
-  }
+  /* ================= 番茄钟（已由状态记录替代，历史数据保留在 state.pomodoro） ================= */
 
   /* ================= 便签 ================= */
   function renderNotes() {
@@ -1047,6 +986,114 @@
     });
   }
 
+  /* ================= 状态与心情记录 ================= */
+  const MOODS = [
+    { k: 'flow',  n: '高效', c: '#0a84ff', v: 5 },
+    { k: 'focus', n: '专注', c: '#34c759', v: 4 },
+    { k: 'calm',  n: '平静', c: '#30b0c7', v: 3 },
+    { k: 'tired', n: '疲惫', c: '#8e8e93', v: 2 },
+    { k: 'irr',   n: '烦躁', c: '#ff9f0a', v: 2 },
+    { k: 'down',  n: '低落', c: '#5e5ce6', v: 1 }
+  ];
+  const moodOf = (k) => MOODS.find((m) => m.k === k);
+
+  function renderMood() {
+    const t = todayStr();
+    const days = state.mood.days || {};
+    const todayRec = days[t];
+    // 今日状态 chips
+    const chips = $('#moodChips');
+    if (chips) {
+      chips.innerHTML = MOODS.map((m) => {
+        const on = todayRec && todayRec.m === m.k;
+        return `<button type="button" class="mood-chip ${on ? 'on' : ''}" data-mood="${m.k}"><i style="background:${m.c}"></i>${m.n}</button>`;
+      }).join('');
+      $$('button', chips).forEach((b) => b.addEventListener('click', () => {
+        const k = b.dataset.mood;
+        state.mood.days = state.mood.days || {};
+        const prev = (state.mood.days[t] || {}).m;
+        if (prev === k) delete state.mood.days[t]; // 再点一次取消
+        else state.mood.days[t] = { m: k, n: (state.mood.days[t] || {}).n || '' };
+        saveModule('mood');
+        renderMood(); renderRhythm();
+        toast(prev === k ? '已取消今天的记录' : '已记录今天的状态：' + moodOf(k).n);
+      }));
+    }
+    // 近 14 天柱状（高度=状态分值，颜色=状态色）
+    const bars = $('#moodBars');
+    if (bars) {
+      const cols = Array.from({ length: 14 }, (_, i) => {
+        const d = new Date(); d.setDate(d.getDate() - (13 - i));
+        const key = todayStr(d);
+        const rec = days[key];
+        const m = rec ? moodOf(rec.m) : null;
+        return { key, label: `${d.getMonth() + 1}/${d.getDate()}`, m, today: key === t };
+      });
+      bars.innerHTML = cols.map((c) => `
+        <span class="mood-bar ${c.today ? 'today' : ''}" title="${c.key}${c.m ? ' · ' + c.m.n : ' · 未记录'}">
+          <i style="height:${c.m ? Math.round((c.m.v / 5) * 100) : 6}%;${c.m ? `background:${c.m.c}` : ''}"></i>
+          <em>${c.label.split('/')[1]}</em>
+        </span>`).join('');
+    }
+    // 分布饼 + 统计
+    const pie = $('#moodPie');
+    if (pie) {
+      const tally = {};
+      for (const rec of Object.values(days)) {
+        if (!rec || !moodOf(rec.m)) continue;
+        tally[rec.m] = (tally[rec.m] || 0) + 1;
+      }
+      const total = Object.values(tally).reduce((a, b) => a + b, 0);
+      let acc = 0; const stops = [];
+      for (const m of MOODS) {
+        if (!tally[m.k]) continue;
+        const from = (acc / Math.max(total, 1)) * 360; acc += tally[m.k];
+        const to = (acc / Math.max(total, 1)) * 360;
+        stops.push(`${m.c} ${from.toFixed(1)}deg ${to.toFixed(1)}deg`);
+      }
+      pie.style.background = total ? `conic-gradient(${stops.join(',')})` : 'rgba(20,30,60,.08)';
+      const top = Object.entries(tally).sort((a, b) => b[1] - a[1])[0];
+      const topM = top ? moodOf(top[0]) : null;
+      $('#moodStat').innerHTML = `
+        <b>${Object.keys(days).length}</b> 天记录 · 最常状态
+        <b style="color:${topM ? topM.c : 'inherit'}">${topM ? topM.n : '—'}</b>`;
+      $('#moodMeta').textContent = total ? `共 ${total} 条` : '';
+    }
+  }
+
+  /* ================= 碎片寄语（5600 句真实名言，5 分钟轮换 + 点击随机） ================= */
+  let quoteTimer = 0;
+  function showQuote(idx) {
+    const list = window.QUOTES || [];
+    if (!list.length) return;
+    const q = list[((idx % list.length) + list.length) % list.length];
+    const textEl = $('#quoteText'), metaEl = $('#quoteMeta');
+    if (!textEl) return;
+    textEl.textContent = q.t;
+    const parts = [q.a && q.a !== '佚名' ? q.a : '佚名', q.n, q.f].filter(Boolean);
+    metaEl.textContent = parts.join(' · ');
+  }
+  function randomQuote() {
+    const list = window.QUOTES || [];
+    if (!list.length) return;
+    showQuote(Math.floor(Math.random() * list.length));
+  }
+  function renderQuote() {
+    const card = $('#quoteCard');
+    if (!card) return;
+    if (!card.dataset.bound) {
+      card.dataset.bound = '1';
+      card.addEventListener('click', () => {
+        randomQuote();
+        card.classList.remove('flip');
+        void card.offsetWidth;
+        card.classList.add('flip');
+      });
+      quoteTimer = setInterval(randomQuote, 300000); // 5 分钟轮换
+    }
+    randomQuote();
+  }
+
   /* ================= 今日节奏（Apple 活动环） ================= */
   function setRing(sel, pct, c) {
     const el = $(sel);
@@ -1059,16 +1106,18 @@
     const t = todayStr();
     const todoDone = state.todos.filter((x) => x.done).length;
     const todoTotal = state.todos.length;
-    const pomoToday = state.pomodoro.daily?.[t] || 0;
     const mastered = state.vocab.words.filter((w) => w.done).length;
     const vocabTotal = state.vocab.words.length;
     setRing('#ringTodo', todoTotal ? todoDone / todoTotal : 0, 2 * Math.PI * 52);
-    setRing('#ringPomo', Math.min(1, pomoToday / 4), 2 * Math.PI * 40);
+    const monthKey = t.slice(0, 7);
+    const moodDays = Object.keys(state.mood.days || {}).filter((k) => k.startsWith(monthKey)).length;
+    const moodTarget = Number(t.slice(8)); // 本月至今天的天数
+    setRing('#ringPomo', moodTarget ? Math.min(1, moodDays / moodTarget) : 0, 2 * Math.PI * 40);
     setRing('#ringVocab', vocabTotal ? mastered / vocabTotal : 0, 2 * Math.PI * 28);
     const pct = todoTotal ? Math.round((todoDone / todoTotal) * 100) : 0;
     const pctEl = $('#rhythmPct');
     if (pctEl) pctEl.textContent = pct + '%';
-    const rl = [['#rlTodo', `${todoDone}/${todoTotal}`], ['#rlPomo', `${pomoToday} 个`], ['#rlVocab', `${mastered}/${vocabTotal} 词`]];
+    const rl = [['#rlTodo', `${todoDone}/${todoTotal}`], ['#rlPomo', `打卡 ${moodDays}/${moodTarget} 天`], ['#rlVocab', `${mastered}/${vocabTotal} 词`]];
     rl.forEach(([sel, txt]) => { const el = $(sel); if (el) el.textContent = txt; });
     const meta = $('#rhythmMeta');
     if (meta) meta.textContent = '番茄日目标 4 个';
@@ -1087,7 +1136,8 @@
     renderNavGrid();
     renderTodayAgenda();
     renderRhythm();
-    $('#pomoMeta').textContent = `今日 ${state.pomodoro.daily?.[todayStr()] || 0} 个`;
+    renderMood();
+    renderQuote();
     updateFluidCards();
     push3dCards();
     initSpotlight();
@@ -1149,7 +1199,6 @@
     switchView('overview');
     renderPaletteGrid();
     bindSliders();
-    bindPomo();
     bindSettings();
     bindData();
     bindAddForms();
