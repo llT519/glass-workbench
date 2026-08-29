@@ -949,3 +949,52 @@ input[type="date"].input { color-scheme:light; }
   }
   .fg-content { text-shadow:none; }
 }
+
+/* ---------- 清空心情数据按钮（精致版） ---------- */
+.mood-reset-btn {
+  appearance:none; font-family:inherit; cursor:pointer;
+  display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  padding:9px 16px; border-radius:13px;
+  font-size:12.5px; font-weight:550; color:#e0485f;
+  border:1px solid rgba(224,72,95,.32);
+  background:linear-gradient(140deg, rgba(224,72,95,.10), rgba(224,72,95,.04));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55), 0 2px 8px rgba(224,72,95,.06);
+  transition:all .18s ease; align-self:flex-start;
+}
+.mood-reset-btn svg { width:15px; height:15px; }
+.mood-reset-btn:hover {
+  color:#fff; border-color:rgba(224,72,95,.55);
+  background:linear-gradient(140deg, rgba(224,72,95,.85), rgba(224,72,95,.65));
+  box-shadow:0 6px 18px rgba(224,72,95,.25), inset 0 1px 0 rgba(255,255,255,.3);
+  transform:translateY(-1px);
+}
+.mood-reset-btn:active { transform:scale(.96); }
+.mood-reset-btn:focus-visible { outline:2px solid rgba(224,72,95,.45); outline-offset:2px; }
+@media (max-width:620px) {
+  .mood-reset-btn { width:100%; padding:11px 16px; }
+}
+
+/* ---------- 清空心情数据按钮（柔和蓝紫玻璃版） ---------- */
+.mood-reset-btn {
+  appearance:none; font-family:inherit; cursor:pointer;
+  display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  padding:9px 16px; border-radius:13px;
+  font-size:12.5px; font-weight:550; color:var(--text-secondary);
+  border:1px solid rgba(var(--tint-rgb, var(--accent-primary-rgb)),.28);
+  background:linear-gradient(140deg, rgba(var(--tint-rgb, var(--accent-primary-rgb)),.08), rgba(255,255,255,.55));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6), 0 2px 8px rgba(30,45,90,.05);
+  transition:all .18s ease; align-self:flex-start;
+  -webkit-tap-highlight-color:transparent;
+}
+.mood-reset-btn svg { width:15px; height:15px; }
+.mood-reset-btn:hover {
+  color:var(--text-primary); border-color:rgba(var(--tint-rgb, var(--accent-primary-rgb)),.5);
+  background:linear-gradient(140deg, rgba(var(--tint-rgb, var(--accent-primary-rgb)),.16), rgba(255,255,255,.7));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 4px 14px rgba(30,45,90,.08);
+  transform:translateY(-1px);
+}
+.mood-reset-btn:active { transform:scale(.96); }
+.mood-reset-btn:focus-visible { outline:2px solid rgba(var(--tint-rgb, var(--accent-primary-rgb)),.4); outline-offset:2px; }
+@media (max-width:620px) {
+  .mood-reset-btn { width:100%; padding:11px 16px; }
+}
