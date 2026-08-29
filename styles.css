@@ -788,3 +788,24 @@ input[type="date"].input { color-scheme:light; }
 .quote-embed .quote-tip { margin:0; font-size:10px; color:var(--text-tertiary); opacity:.6; }
 .quote-embed.flip .quote-text, .quote-embed.flip .quote-meta { animation:quoteFlip .5s cubic-bezier(.2,.8,.2,1); }
 @keyframes quoteFlip { from { opacity:0; transform:translateY(6px); filter:blur(3px); } }
+
+/* ---------- 碎片寄语（独立大卡还原版） ---------- */
+.quote-card { padding:0; }
+.quote-inner {
+  position:relative; z-index:1; padding:32px 36px 24px; cursor:pointer; user-select:none;
+  min-height:170px; display:flex; flex-direction:column; justify-content:center;
+}
+.quote-inner .quote-mark {
+  position:absolute; top:4px; left:18px; font-family:Georgia, "Times New Roman", serif;
+  font-size:76px; line-height:1; color:rgba(var(--tint-rgb),.16); pointer-events:none;
+}
+.quote-inner .quote-text {
+  margin:8px 0 14px; font-family:Georgia, "Noto Serif SC", "Songti SC", "SimSun", serif;
+  font-size:19px; line-height:1.9; color:var(--text-primary); letter-spacing:.02em;
+  text-wrap:balance;
+}
+.quote-inner .quote-meta { margin:0 0 10px; font-size:12.5px; color:var(--text-tertiary); letter-spacing:.06em; }
+.quote-inner .quote-meta::before { content:"—— "; }
+.quote-inner .quote-tip { margin:0; font-size:10.5px; color:var(--text-tertiary); opacity:.65; }
+.quote-inner.flip .quote-text, .quote-inner.flip .quote-meta { animation:quoteFlip .5s cubic-bezier(.2,.8,.2,1); }
+@keyframes quoteFlip { from { opacity:0; transform:translateY(8px); filter:blur(3px); } }
