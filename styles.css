@@ -809,3 +809,44 @@ input[type="date"].input { color-scheme:light; }
 .quote-inner .quote-tip { margin:0; font-size:10.5px; color:var(--text-tertiary); opacity:.65; }
 .quote-inner.flip .quote-text, .quote-inner.flip .quote-meta { animation:quoteFlip .5s cubic-bezier(.2,.8,.2,1); }
 @keyframes quoteFlip { from { opacity:0; transform:translateY(8px); filter:blur(3px); } }
+
+
+/* ---------- 碎片寄语（嵌入今日安排卡，手机端交互优化） ---------- */
+.quote-embed {
+  position:relative; z-index:1; margin-top:6px; padding:20px 20px 16px;
+  border-radius:18px; cursor:pointer; user-select:none;
+  background:linear-gradient(160deg, rgba(255,255,255,.74), rgba(255,255,255,.44));
+  -webkit-backdrop-filter:blur(20px) saturate(160%); backdrop-filter:blur(20px) saturate(160%);
+  border:1px solid rgba(255,255,255,.82);
+  box-shadow:0 10px 26px rgba(30,45,90,.10), inset 0 1px 0 rgba(255,255,255,.92);
+  transition:transform .18s cubic-bezier(.2,.8,.2,1), box-shadow .18s ease;
+}
+.quote-embed:active { transform:scale(.975); }
+.quote-embed .quote-mark {
+  position:absolute; top:2px; left:14px; font-family:Georgia, "Times New Roman", serif;
+  font-size:60px; line-height:1; color:rgba(var(--tint-rgb),.16); pointer-events:none;
+}
+.quote-embed .quote-text {
+  margin:8px 0 12px; font-family:Georgia, "Noto Serif SC", "Songti SC", "SimSun", serif;
+  font-size:17px; line-height:1.9; color:var(--text-primary); letter-spacing:.02em;
+  text-wrap:balance;
+}
+.quote-embed .quote-meta { margin:0 0 10px; font-size:12px; color:var(--text-tertiary); letter-spacing:.05em; }
+.quote-embed .quote-meta::before { content:"—— "; }
+.quote-embed .quote-tip { margin:0; font-size:10.5px; color:var(--text-tertiary); opacity:.65; }
+.quote-embed.flip .quote-text, .quote-embed.flip .quote-meta { animation:quoteFlip .45s cubic-bezier(.2,.8,.2,1); }
+@keyframes quoteFlip { from { opacity:0; transform:translateY(8px); filter:blur(3px); } }
+
+/* 手机端专用：更大触控热区、字号适配、按压反馈 */
+@media (max-width:620px) {
+  .agenda-card:has(.quote-embed) { padding-bottom:14px; }
+  .quote-embed { margin-top:8px; padding:22px 20px 18px; border-radius:20px; }
+  .quote-embed::after {
+    content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+    background:radial-gradient(200px circle at 50% 0%, rgba(255,255,255,.35), transparent 65%);
+  }
+  .quote-embed .quote-mark { font-size:50px; top:4px; left:14px; }
+  .quote-embed .quote-text { font-size:16.5px; line-height:1.85; margin:6px 0 12px; }
+  .quote-embed .quote-meta { font-size:11.5px; }
+  .quote-embed .quote-tip { font-size:10px; }
+}
