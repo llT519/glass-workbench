@@ -38,7 +38,7 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== location.origin) return;
   /* 网络优先：文件更新后立即生效，断网时回退缓存 */
   event.respondWith(
-    fetch(event.request).then((res) => {
+    fetch(event.request, { cache: 'no-cache' }).then((res) => {
       if (res.ok) {
         const copy = res.clone();
         caches.open(CACHE).then((cache) => cache.put(event.request, copy));
