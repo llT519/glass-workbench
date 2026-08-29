@@ -299,8 +299,8 @@
     const rate = state.todos.length ? Math.round((doneCount / state.todos.length) * 100) : 0;
     setFluidCard('todo', { num: doneCount, fmt: (n) => String(Math.round(n)), unit: `项 · 共 ${state.todos.length}`, changeText: `完成率 ${rate}%` });
 
-    const pomoToday = state.pomodoro.daily?.[t] || 0;
-    setFluidCard('pomo', { num: pomoToday, fmt: (n) => String(Math.round(n)), unit: '个', changeText: `今日第 ${pomoToday} 个番茄` });
+    const moodToday = moodEntries(t).length;
+    setFluidCard('mood', { num: moodToday, fmt: (n) => String(Math.round(n)), unit: '条', changeText: `今日已记录 ${moodToday} 次` });
 
     const due = vocabDue().length;
     const mastered = state.vocab.words.filter((w) => w.done).length;
@@ -1237,15 +1237,17 @@
       weekSum.textContent = txt;
     }
 
-    // 今日心情占比饼图（今日各状态条目占比，样式与位置不变）
+    // 状态分布饼图（全部记录分布）+ 柔和空态 + 数据重置
     const pie = $('#moodPie');
     if (pie) {
       const tally = {};
       let total = 0;
-      for (const rec of todayList) {
-        if (!moodOf(rec.m)) continue;
-        tally[rec.m] = (tally[rec.m] || 0) + 1;
-        total++;
+      for (const d of Object.keys(days)) {
+        for (const rec of moodEntries(d)) {
+          if (!moodOf(rec.m)) continue;
+          tally[rec.m] = (tally[rec.m] || 0) + 1;
+          total++;
+        }
       }
       let acc = 0; const stops = [];
       for (const m of MOODS) {
@@ -1254,16 +1256,30 @@
         const to = (acc / Math.max(total, 1)) * 360;
         stops.push(`${m.c} ${from.toFixed(1)}deg ${to.toFixed(1)}deg`);
       }
-      pie.style.background = total ? `conic-gradient(${stops.join(',')})` : 'rgba(20,30,60,.08)';
+      pie.style.background = total ? `conic-gradient(${stops.join(',')})` : 'rgba(20,30,60,.06)';
       const top = Object.entries(tally).sort((a, b) => b[1] - a[1])[0];
       const topM = top ? moodOf(top[0]) : null;
       const stat = $('#moodStat');
       if (stat) stat.innerHTML = total
-        ? `今日 <b>${total}</b> 条记录 · 占比最高
+        ? `<b>${Object.keys(days).length}</b> 天 · <b>${total}</b> 条 · 最常
            <b style="color:${topM ? topM.c : 'inherit'}">${topM.n} ${Math.round((top[1] / total) * 100)}%</b>`
-        : `今日暂无记录，点上方状态即可`;
+        : '<span class="hint">还没有留下心情记录</span>';
       const meta = $('#moodMeta');
-      if (meta) meta.textContent = total ? `今日 ${total} 条` : '';
+      if (meta) meta.textContent = total ? `共 ${total} 条` : '';
+      const reset = $('#moodResetBtn');
+      if (reset) {
+        reset.hidden = !total;
+        if (!reset.dataset.bound) {
+          reset.dataset.bound = '1';
+          reset.addEventListener('click', () => {
+            if (!confirm('确定清空全部心情记录吗？此操作不可恢复。')) return;
+            state.mood.days = {};
+            saveModule('mood');
+            renderMood(); renderRecall(); renderRhythm();
+            toast('心情数据已重置');
+          });
+        }
+      }
     }
   }
 
@@ -1306,6 +1322,98 @@
       });
     }
     randomQuote();
+  }
+
+  /* ================= 心情回顾（学习页时间轴 + 弹窗 + 学习联动） ================= */
+  function renderRecall() {
+    const axis = $('#recallAxis');
+    if (!axis) return;
+    const days = state.mood.days || {};
+    const cols = Array.from({ length: 14 }, (_, i) => {
+      const d = new Date(); d.setDate(d.getDate() - (13 - i));
+      const key = todayStr(d);
+      const list = moodEntries(key);
+      const tally = {};
+      for (const r of list) { const m = moodOf(r.m); if (m) tally[m.k] = (tally[m.k] || 0) + 1; }
+      const ranked = Object.entries(tally).sort((a, b) => b[1] - a[1]).map(([k]) => moodOf(k)).filter(Boolean);
+      const tie = ranked.length > 1 && tally[ranked[0].k] === tally[ranked[1].k];
+      const top = ranked[0] || null;
+      return { key, label: `${d.getMonth() + 1}/${d.getDate()}`, dow: '周' + WEEK_ZH[(d.getDay() + 6) % 7], list, top, tie, second: tie ? ranked[1] : null, today: key === t };
+    });
+    axis.innerHTML = cols.map((c) => {
+      let dot = '<i class="rd-dot none"></i>';
+      if (c.top && c.tie && c.second) dot = `<i class="rd-dot split" style="background:linear-gradient(180deg, ${c.top.c} 50%, ${c.second.c} 50%)"></i>`;
+      else if (c.top) dot = `<i class="rd-dot" style="background:${c.top.c}"></i>`;
+      return `<button type="button" class="rd-cell ${c.today ? 'today' : ''} ${c.list.length ? 'has' : ''}" data-day="${c.key}">
+        ${dot}
+        <b>${c.label}</b>
+        <small>${c.dow}${c.list.length ? ' · ' + c.list.length : ''}</small>
+      </button>`;
+    }).join('');
+    $$('[data-day]', axis).forEach((btn) => btn.addEventListener('click', () => openDayModal(btn.dataset.day)));
+    const metaEl = $('#recallMeta');
+    if (metaEl) metaEl.textContent = `近 14 天 · 已记录 ${cols.filter((c) => c.list.length).length} 天 · 点击某一天回溯`;
+
+    // 情绪 × 学习联动洞察（真实数据：各主导心情日的待办完成量对比）
+    const insight = $('#moodLinkInsight');
+    if (insight) {
+      const byMood = {};
+      for (const k of keys14Helper()) {
+        const list = moodEntries(k);
+        if (!list.length) continue;
+        const tally2 = {};
+        for (const r of list) { const m = moodOf(r.m); if (m) tally2[m.k] = (tally2[m.k] || 0) + 1; }
+        const top2 = Object.entries(tally2).sort((a, b) => b[1] - a[1])[0];
+        if (!top2) continue;
+        const done = state.todos.filter((x) => x.done && x.doneAt === k).length;
+        byMood[top2[0]] = byMood[top2[0]] || { days: 0, done: 0 };
+        byMood[top2[0]].days++; byMood[top2[0]].done += done;
+      }
+      const ranked = Object.entries(byMood).filter(([, v]) => v.days >= 1).sort((a, b) => b[1].done / b[1].days - a[1].done / a[1].days);
+      if (ranked.length >= 2) {
+        const best = moodOf(ranked[0][0]), worst = moodOf(ranked[ranked.length - 1][0]);
+        const bd = (ranked[0][1].done / ranked[0][1].days).toFixed(1);
+        const wd = (ranked[ranked.length - 1][1].done / ranked[ranked.length - 1][1].days).toFixed(1);
+        insight.textContent = `数据联动：处于「${best.n}」状态的日子，你的待办日均完成 ${bd} 项；而「${worst.n}」状态的日子日均只有 ${wd} 项。把难事安排在自己的高能状态日，效率会更高。`;
+      } else if (ranked.length === 1) {
+        const m = moodOf(ranked[0][0]);
+        insight.textContent = `数据联动：目前「${m.n}」状态日的待办日均完成 ${(ranked[0][1].done / ranked[0][1].days).toFixed(1)} 项，继续积累记录后可对比不同状态的学习效率。`;
+      } else {
+        insight.textContent = '继续记录心情与待办，积累几天后这里会告诉你：哪种状态下你的学习效率最高。';
+      }
+    }
+  }
+  function keys14Helper() {
+    return Array.from({ length: 14 }, (_, i) => { const d = new Date(); d.setDate(d.getDate() - (13 - i)); return todayStr(d); });
+  }
+  /* 当日心情回溯弹窗 */
+  function openDayModal(dayKey) {
+    const list = moodEntries(dayKey);
+    let dlg = $('#dayModal');
+    if (!dlg) {
+      dlg = document.createElement('div');
+      dlg.id = 'dayModal';
+      dlg.className = 'modal-backdrop';
+      dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.hidden = true; });
+      document.body.appendChild(dlg);
+    }
+    const d = new Date(dayKey + 'T12:00:00');
+    const title = `${d.getMonth() + 1} 月 ${d.getDate()} 日 · ${list.length ? list.length + ' 条记录' : '暂无记录'}`;
+    dlg.innerHTML = `<div class="modal day-modal"><div class="modal-head"><h2>${title}</h2><button class="icon-btn" data-close type="button" aria-label="关闭">✕</button></div>
+      <div class="modal-body">
+        ${list.length ? list.map((r, i) => { const m = moodOf(r.m) || MOODS[0]; return `<div class="day-rec-row"><i style="background:${m.c}"></i><b>${r.at || '--:--'}</b><span>${m.n}</span><button class="btn ghost small" data-del="${i}" type="button">删除</button></div>`; }).join('') : '<p class="hint">这一天没有心情记录。</p>'}
+      </div></div>`;
+    dlg.hidden = false;
+    $$('[data-close]', dlg).forEach((b) => b.addEventListener('click', () => { dlg.hidden = true; }));
+    $$('[data-del]', dlg).forEach((b) => b.addEventListener('click', () => {
+      const list2 = moodEntries(dayKey);
+      list2.splice(Number(b.dataset.del), 1);
+      if (list2.length) state.mood.days[dayKey] = list2; else delete state.mood.days[dayKey];
+      saveModule('mood');
+      renderMood(); renderRecall(); renderRhythm();
+      dlg.hidden = true;
+      toast('已删除该条记录');
+    }));
   }
 
   /* ================= 今日节奏（Apple 活动环） ================= */
@@ -1351,6 +1459,7 @@
     renderTodayAgenda();
     renderRhythm();
     renderMood();
+    renderRecall();
     renderQuote();
     updateFluidCards();
     initSpotlight();
