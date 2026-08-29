@@ -859,3 +859,20 @@ input[type="date"].input { color-scheme:light; }
 @media (max-width:620px) {
   .quote-embed, .quote-embed:active, .quote-embed:focus { -webkit-tap-highlight-color:transparent; outline:none; }
 }
+
+/* 触屏设备点击不激活 hover 蓝框（手机端整卡蓝框根因修复） */
+@media (hover: none) {
+  .card:hover {
+    transform:none;
+    border-color:var(--border-default);
+    box-shadow:var(--shadow-card);
+    background:linear-gradient(150deg, rgba(255,255,255,.82), rgba(255,255,255,.58));
+  }
+  .card:active { transform:none; }
+  .card .spot { opacity:0 !important; }
+}
+/* 寄语内盒触屏点击：仅保留按压反馈，无视 hover */
+@media (hover: none) {
+  .quote-embed:hover { transform:none; border-color:rgba(255,255,255,.82); box-shadow:0 10px 26px rgba(30,45,90,.10), inset 0 1px 0 rgba(255,255,255,.92); }
+  .quote-embed:active { transform:scale(.975); }
+}
