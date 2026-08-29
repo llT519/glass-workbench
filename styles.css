@@ -922,3 +922,30 @@ input[type="date"].input { color-scheme:light; }
     box-shadow:0 10px 26px color-mix(in srgb, var(--fluid-a) 20%, transparent), inset 0 1px 0 rgba(255,255,255,.85);
   }
 }
+
+/* ---------- 手机端指标卡去灰·强覆盖（!important 压制引擎白灰底） ---------- */
+@media (max-width:620px) {
+  .fg-card {
+    --content-shade:.03 !important; --content-shade-mid:.015 !important;
+    --content-shade-soft:.008 !important;
+    --surface-opacity:.05 !important;
+    background-color:transparent !important;
+    background:
+      radial-gradient(130% 95% at 88% 16%, color-mix(in srgb, var(--fluid-b) 34%, transparent), transparent 56%),
+      radial-gradient(120% 100% at 16% 94%, color-mix(in srgb, var(--fluid-c) 22%, transparent), transparent 60%),
+      linear-gradient(152deg, color-mix(in srgb, var(--fluid-a) 15%, #ffffff 93%), #ffffff 80%) !important;
+    border-color:color-mix(in srgb, var(--fluid-a) 48%, transparent) !important;
+    box-shadow:
+      0 8px 24px color-mix(in srgb, var(--fluid-a) 18%, transparent),
+      0 2px 8px color-mix(in srgb, var(--fluid-a) 9%, transparent),
+      inset 0 1px 0 rgba(255,255,255,.7) !important;
+  }
+  .fg-card::before {
+    opacity:.04 !important;
+    background:transparent !important;
+  }
+  .fg-card::after {
+    opacity:.5 !important;
+  }
+  .fg-content { text-shadow:none; }
+}
