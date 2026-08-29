@@ -88,14 +88,26 @@
 
             <div class="fg-grid span-12" id="fluidGlassGrid" aria-label="今日数据指标"></div>
 
-            <div class="card threed-embed-card span-7">
-              <div class="card-head">
-                <h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7z"/><path d="M3.3 7 12 12l8.7-5"/><path d="M12 22V12"/></svg></span>3D 视界</h2>
-                <span class="card-meta">拖动旋转 · 滚轮缩放</span>
-                <button class="btn ghost small" id="embed3dFullscreen" type="button">⤢ 全屏</button>
-              </div>
-              <div class="threed-embed">
-                <iframe id="threedEmbedFrame" src="三维卡片环/index.html" title="3D 卡片环"></iframe>
+
+            <div class="card span-7" data-tint="rose">
+              <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span>今日节奏</h2><span class="card-meta" id="rhythmMeta"></span></div>
+              <div class="card-body rhythm-body">
+                <div class="rhythm-rings">
+                  <svg viewBox="0 0 120 120" aria-hidden="true">
+                    <circle class="rr-bg" cx="60" cy="60" r="52"/>
+                    <circle class="rr-bg" cx="60" cy="60" r="40"/>
+                    <circle class="rr-bg" cx="60" cy="60" r="28"/>
+                    <circle class="rr-fg" id="ringTodo" cx="60" cy="60" r="52" stroke="#0a7cff"/>
+                    <circle class="rr-fg" id="ringPomo" cx="60" cy="60" r="40" stroke="#ff375f"/>
+                    <circle class="rr-fg" id="ringVocab" cx="60" cy="60" r="28" stroke="#30d158"/>
+                  </svg>
+                  <div class="rhythm-center"><b id="rhythmPct">0%</b><small>完成</small></div>
+                </div>
+                <div class="rhythm-legend">
+                  <div class="rl-item"><i style="background:#0a7cff"></i><span>今日待办</span><b id="rlTodo">0/0</b></div>
+                  <div class="rl-item"><i style="background:#ff375f"></i><span>番茄专注</span><b id="rlPomo">0 个</b></div>
+                  <div class="rl-item"><i style="background:#30d158"></i><span>单词复习</span><b id="rlVocab">0 词</b></div>
+                </div>
               </div>
             </div>
 
