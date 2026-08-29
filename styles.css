@@ -308,9 +308,12 @@ input[type="date"].input { color-scheme:light; }
   gap:var(--space-3);
 }
 .fg-card {
-  background:linear-gradient(152deg, rgba(255,255,255,.38), rgba(255,255,255,.16) 55%, rgba(255,255,255,.28));
-  border-color:rgba(255,255,255,.6);
-  box-shadow:0 16px 36px rgba(30,45,90,.14), 0 2px 8px rgba(30,45,90,.06), inset 0 1px 0 rgba(255,255,255,.85);
+  background:linear-gradient(152deg, rgba(255,255,255,.48), rgba(255,255,255,.24) 55%, rgba(255,255,255,.36));
+  border-color:rgba(255,255,255,.78);
+  box-shadow:
+    0 12px 28px rgba(120,140,230,.12),
+    0 2px 8px rgba(120,140,230,.05),
+    inset 0 1px 0 rgba(255,255,255,.9);
   height:auto; min-height:156px;
 }
 .fg-card:hover, .fg-card.is-selected {
