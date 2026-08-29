@@ -730,3 +730,61 @@ input[type="date"].input { color-scheme:light; }
   padding:9px 12px; border-radius:12px;
   background:rgba(var(--tint-rgb),.07); border:1px solid rgba(var(--tint-rgb),.14);
 }
+
+/* 近 14 天总结 */
+.mood-week-summary {
+  margin:0; font-size:12.5px; line-height:1.75; color:var(--text-secondary);
+  padding:10px 12px; border-radius:12px;
+  background:rgba(var(--tint-rgb),.06); border:1px solid rgba(var(--tint-rgb),.14);
+}
+
+
+/* ---------- 心情回顾（学习页时间轴） ---------- */
+.recall-axis { display:grid; grid-template-columns:repeat(14,1fr); gap:6px; }
+.rd-cell {
+  appearance:none; font-family:inherit; cursor:pointer; text-align:center;
+  border:1px solid var(--border-subtle); border-radius:12px; padding:10px 4px 8px;
+  background:rgba(255,255,255,.55); color:var(--text-secondary);
+  display:flex; flex-direction:column; align-items:center; gap:5px; transition:all .16s ease;
+}
+.rd-cell:hover { border-color:rgba(var(--accent-primary-rgb),.4); background:rgba(255,255,255,.95); transform:translateY(-2px); }
+.rd-cell.today { border-color:rgba(var(--accent-primary-rgb),.45); }
+.rd-cell.has { background:rgba(var(--tint-rgb,.5),.06); }
+.rd-dot { width:12px; height:12px; border-radius:50%; background:rgba(20,30,60,.08); }
+.rd-dot.none { background:rgba(20,30,60,.08); }
+.rd-cell b { font-size:11.5px; font-weight:600; font-variant-numeric:tabular-nums; }
+.rd-cell small { font-size:9px; color:var(--text-tertiary); }
+.day-rec-row {
+  display:flex; align-items:center; gap:12px; padding:10px 12px;
+  border:1px solid var(--border-subtle); border-radius:var(--radius-control);
+  background:rgba(255,255,255,.6); font-size:13.5px;
+}
+.day-rec-row i { width:10px; height:10px; border-radius:50%; flex:0 0 auto; }
+.day-rec-row b { font-family:var(--font-display); font-variant-numeric:tabular-nums; }
+.day-rec-row span { flex:1; }
+.day-modal { width:min(440px, calc(100vw - 32px)); }
+
+
+/* ---------- 碎片寄语（嵌入今日安排卡内） ---------- */
+.quote-embed {
+  position:relative; z-index:1; margin-top:2px; padding:18px 18px 14px;
+  border-radius:16px; cursor:pointer; user-select:none;
+  background:linear-gradient(160deg, rgba(255,255,255,.72), rgba(255,255,255,.42));
+  -webkit-backdrop-filter:blur(18px) saturate(160%); backdrop-filter:blur(18px) saturate(160%);
+  border:1px solid rgba(255,255,255,.8);
+  box-shadow:0 8px 22px rgba(30,45,90,.08), inset 0 1px 0 rgba(255,255,255,.9);
+}
+.quote-embed .quote-mark {
+  position:absolute; top:2px; left:12px; font-family:Georgia, "Times New Roman", serif;
+  font-size:56px; line-height:1; color:rgba(var(--tint-rgb),.16); pointer-events:none;
+}
+.quote-embed .quote-text {
+  margin:8px 0 10px; font-family:Georgia, "Noto Serif SC", "Songti SC", "SimSun", serif;
+  font-size:15.5px; line-height:1.85; color:var(--text-primary); letter-spacing:.02em;
+  text-wrap:balance;
+}
+.quote-embed .quote-meta { margin:0 0 8px; font-size:11.5px; color:var(--text-tertiary); letter-spacing:.06em; }
+.quote-embed .quote-meta::before { content:"—— "; }
+.quote-embed .quote-tip { margin:0; font-size:10px; color:var(--text-tertiary); opacity:.6; }
+.quote-embed.flip .quote-text, .quote-embed.flip .quote-meta { animation:quoteFlip .5s cubic-bezier(.2,.8,.2,1); }
+@keyframes quoteFlip { from { opacity:0; transform:translateY(6px); filter:blur(3px); } }
