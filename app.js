@@ -1112,6 +1112,9 @@
   /* ================= 初始化 ================= */
   function init() {
     if (!requireLogin()) return;
+    /* 注入设置按钮图标 */
+    $('#openSettingsBtn').innerHTML = ICONS.gear;
+    $('#openSettingsBtnM').innerHTML = ICONS.gear;
     applyPalette();
     /* 应用已保存的流体玻璃渲染质量 */
     if (window.FluidGlassMaterial && state.settings.fluidQuality && state.settings.fluidQuality !== 'auto') {
