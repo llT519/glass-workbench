@@ -94,7 +94,7 @@
             <!-- 3D 视界：亚克力卡片环直接嵌入仪表盘，实时镜像工作台数据 -->
             <div class="card dg-card span-7 threed-embed-card">
               <div class="card-head">
-                <h2>🔮 3D 视界</h2>
+                <h2><span class="hd-ico">🔮</span>3D 视界</h2>
                 <span class="card-meta">拖动旋转 · 滚轮缩放 · 点击卡片居中</span>
                 <button class="btn ghost small" id="embed3dFullscreen" type="button">⤢ 全屏</button>
               </div>
@@ -104,7 +104,7 @@
             </div>
 
             <div class="card dg-card span-5">
-              <div class="card-head"><h2>✅ 待办清单</h2><span class="card-meta" id="todoMeta"></span></div>
+              <div class="card-head"><h2><span class="hd-ico">✅</span>待办清单</h2><span class="card-meta" id="todoMeta"></span></div>
               <div class="card-body todo-body">
                 <form class="inline-form" id="todoForm">
                   <input class="input" id="todoInput" type="text" placeholder="添加一条待办，回车确认" maxlength="80" autocomplete="off">
@@ -118,7 +118,7 @@
             </div>
 
             <div class="card dg-card span-4">
-              <div class="card-head"><h2>🍅 番茄钟</h2><span class="card-meta" id="pomoMeta"></span></div>
+              <div class="card-head"><h2><span class="hd-ico">🍅</span>番茄钟</h2><span class="card-meta" id="pomoMeta"></span></div>
               <div class="card-body pomo-body">
                 <div class="pomo-ring">
                   <svg viewBox="0 0 120 120" aria-hidden="true">
@@ -141,12 +141,12 @@
             </div>
 
             <div class="card dg-card span-4">
-              <div class="card-head"><h2>📌 今日安排</h2><span class="card-meta" id="agendaMeta"></span></div>
+              <div class="card-head"><h2><span class="hd-ico">📌</span>今日安排</h2><span class="card-meta" id="agendaMeta"></span></div>
               <div class="card-body" id="todayAgenda"></div>
             </div>
 
             <div class="card dg-card span-4">
-              <div class="card-head"><h2>📝 便签</h2><button class="btn ghost small" id="noteAdd" type="button">+ 新便签</button></div>
+              <div class="card-head"><h2><span class="hd-ico">📝</span>便签</h2><button class="btn ghost small" id="noteAdd" type="button">+ 新便签</button></div>
               <div class="card-body note-body" id="noteList"></div>
             </div>
           </div>
@@ -156,12 +156,12 @@
         <section class="view" data-view="study" hidden>
           <div class="card-grid">
             <div class="card dg-card span-4">
-              <div class="card-head"><h2>📈 学习进度</h2><button class="btn ghost small" id="studyAdd" type="button">+ 新项目</button></div>
+              <div class="card-head"><h2><span class="hd-ico">📈</span>学习进度</h2><button class="btn ghost small" id="studyAdd" type="button">+ 新项目</button></div>
               <div class="card-body" id="studyList"></div>
             </div>
 
             <div class="card dg-card span-5">
-              <div class="card-head"><h2>🧠 艾宾浩斯背单词</h2><span class="card-meta" id="vocabMeta"></span></div>
+              <div class="card-head"><h2><span class="hd-ico">🧠</span>艾宾浩斯背单词</h2><span class="card-meta" id="vocabMeta"></span></div>
               <div class="card-body vocab-body">
                 <form class="inline-form" id="vocabForm">
                   <input class="input" id="vocabWord" type="text" placeholder="单词，如 abandon" autocomplete="off">
@@ -177,7 +177,7 @@
             </div>
 
             <div class="card dg-card span-3">
-              <div class="card-head"><h2>🗓 每周时间表</h2><button class="btn ghost small" id="ttAdd" type="button">+ 添加安排</button></div>
+              <div class="card-head"><h2><span class="hd-ico">🗓</span>每周时间表</h2><button class="btn ghost small" id="ttAdd" type="button">+ 添加安排</button></div>
               <div class="card-body tt-body" id="timetable"></div>
             </div>
           </div>
@@ -187,7 +187,7 @@
         <section class="view" data-view="ledger" hidden>
           <div class="card-grid">
             <div class="card dg-card span-4">
-              <div class="card-head"><h2>✏️ 快速记一笔</h2></div>
+              <div class="card-head"><h2><span class="hd-ico">✏️</span>快速记一笔</h2></div>
               <div class="card-body">
                 <form id="ledgerForm" class="ledger-form">
                   <div class="seg" id="ledgerTypeSeg">
@@ -208,12 +208,12 @@
             </div>
 
             <div class="card dg-card span-4">
-              <div class="card-head"><h2>📊 本月统计</h2><span class="card-meta" id="ledgerMonthMeta"></span></div>
+              <div class="card-head"><h2><span class="hd-ico">📊</span>本月统计</h2><span class="card-meta" id="ledgerMonthMeta"></span></div>
               <div class="card-body" id="ledgerStats"></div>
             </div>
 
             <div class="card dg-card span-4">
-              <div class="card-head"><h2>🧾 记录</h2><span class="card-meta" id="ledgerListMeta"></span></div>
+              <div class="card-head"><h2><span class="hd-ico">🧾</span>记录</h2><span class="card-meta" id="ledgerListMeta"></span></div>
               <div class="card-body">
                 <ul class="ledger-list" id="ledgerList"></ul>
               </div>
@@ -225,11 +225,11 @@
         <section class="view" data-view="goals" hidden>
           <div class="card-grid">
             <div class="card dg-card span-7">
-              <div class="card-head"><h2>🎯 目标</h2><button class="btn ghost small" id="goalAdd" type="button">+ 新目标</button></div>
+              <div class="card-head"><h2><span class="hd-ico">🎯</span>目标</h2><button class="btn ghost small" id="goalAdd" type="button">+ 新目标</button></div>
               <div class="card-body" id="goalList"></div>
             </div>
             <div class="card dg-card span-5">
-              <div class="card-head"><h2>🔥 近 7 天完成</h2></div>
+              <div class="card-head"><h2><span class="hd-ico">🔥</span>近 7 天完成</h2></div>
               <div class="card-body" id="weekStats"></div>
             </div>
           </div>
@@ -239,20 +239,20 @@
         <section class="view" data-view="nav" hidden>
           <div class="card-grid">
             <div class="card dg-card span-5">
-              <div class="card-head"><h2>🧭 快捷导航</h2><button class="btn ghost small" id="navAdd" type="button">+ 添加网址</button></div>
+              <div class="card-head"><h2><span class="hd-ico">🧭</span>快捷导航</h2><button class="btn ghost small" id="navAdd" type="button">+ 添加网址</button></div>
               <div class="card-body">
                 <div class="navgrid" id="navGrid"></div>
               </div>
             </div>
             <div class="card dg-card span-4 threed-card">
-              <div class="card-head"><h2>🔮 3D 卡片环</h2></div>
+              <div class="card-head"><h2><span class="hd-ico">🔮</span>3D 卡片环</h2></div>
               <div class="card-body threed-body">
                 <p>进入三维环绕的亚克力卡片展示模式，可拖动旋转、滚轮缩放，卡片颜色与文字均可自定义。</p>
                 <button class="btn primary wide" id="open3dBtn" type="button">进入 3D 模式</button>
               </div>
             </div>
             <div class="card dg-card span-3">
-              <div class="card-head"><h2>🗄 数据</h2></div>
+              <div class="card-head"><h2><span class="hd-ico">🗄</span>数据</h2></div>
               <div class="card-body data-body">
                 <button class="btn ghost wide" id="exportBtn" type="button">导出全部数据（JSON）</button>
                 <button class="btn ghost wide" id="importBtn" type="button">导入数据备份</button>
@@ -274,7 +274,7 @@
   <div class="modal-backdrop" id="settingsBackdrop" hidden>
     <div class="modal dg-panel" role="dialog" aria-label="系统设置">
       <div class="modal-head">
-        <h2>⚙ 系统设置</h2>
+        <h2><span class="hd-ico">⚙</span>系统设置</h2>
         <button class="btn ghost icon-btn" id="settingsClose" type="button" aria-label="关闭">✕</button>
       </div>
       <div class="modal-body">
