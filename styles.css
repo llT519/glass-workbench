@@ -685,3 +685,50 @@ input[type="date"].input { color-scheme:light; }
   .rhythm-body { flex-direction:column; align-items:flex-start; }
   .rhythm-rings { width:116px; height:116px; }
 }
+
+
+/* ---------- 状态与心情 ---------- */
+.mood-body { gap:12px; }
+.mood-chips { display:flex; flex-wrap:wrap; gap:7px; }
+.mood-chip {
+  appearance:none; font-family:inherit; font-size:12px; cursor:pointer;
+  display:inline-flex; align-items:center; gap:6px; padding:7px 12px;
+  border-radius:999px; color:var(--text-secondary);
+  border:1px solid var(--border-default); background:rgba(255,255,255,.6);
+  transition:all .16s ease;
+}
+.mood-chip i { width:8px; height:8px; border-radius:50%; }
+.mood-chip:hover { border-color:var(--border-strong); color:var(--text-primary); }
+.mood-chip.on {
+  color:var(--text-primary); border-color:rgba(var(--accent-primary-rgb),.45);
+  background:rgba(var(--accent-primary-rgb),.1); font-weight:600;
+  box-shadow:0 4px 14px rgba(var(--accent-primary-rgb),.15);
+}
+.mood-chart-title { font-size:11px; color:var(--text-tertiary); letter-spacing:.04em; }
+.mood-bars { display:flex; align-items:flex-end; gap:5px; height:64px; }
+.mood-bar { flex:1; height:100%; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; gap:3px; }
+.mood-bar i { display:block; width:100%; border-radius:5px 5px 2px 2px; background:rgba(20,30,60,.08); min-height:4px; transition:height .5s cubic-bezier(.2,.8,.2,1); }
+.mood-bar.today i { outline:1.5px solid rgba(var(--accent-primary-rgb),.55); outline-offset:1px; }
+.mood-bar em { font-style:normal; font-size:8.5px; color:var(--text-tertiary); }
+.mood-pie-row { display:flex; align-items:center; gap:12px; }
+.mood-pie { width:56px; height:56px; border-radius:50%; flex:0 0 auto; border:3px solid rgba(255,255,255,.8); box-shadow:0 4px 12px rgba(30,45,90,.12); }
+.mood-stat { font-size:12.5px; color:var(--text-secondary); line-height:1.8; }
+.mood-stat b { font-family:var(--font-display); font-size:15px; }
+
+/* ---------- 碎片寄语 ---------- */
+.quote-card { padding:0; }
+.quote-inner { padding:30px 34px 24px; cursor:pointer; position:relative; z-index:1; min-height:170px; display:flex; flex-direction:column; justify-content:center; user-select:none; }
+.quote-inner.flip .quote-text, .quote-inner.flip .quote-meta { animation:quoteFlip .5s cubic-bezier(.2,.8,.2,1); }
+@keyframes quoteFlip { from { opacity:0; transform:translateY(8px); filter:blur(3px); } }
+.quote-mark {
+  position:absolute; top:6px; left:20px; font-family:Georgia, "Times New Roman", serif;
+  font-size:76px; line-height:1; color:rgba(var(--tint-rgb),.16); pointer-events:none;
+}
+.quote-text {
+  margin:6px 0 14px; font-family:Georgia, "Noto Serif SC", "Songti SC", "SimSun", serif;
+  font-size:19px; line-height:1.9; color:var(--text-primary); letter-spacing:.02em;
+  text-wrap:balance;
+}
+.quote-meta { margin:0 0 10px; font-size:12.5px; color:var(--text-tertiary); letter-spacing:.06em; }
+.quote-meta::before { content:"—— "; }
+.quote-tip { margin:0; font-size:10.5px; color:var(--text-tertiary); opacity:.65; }
