@@ -998,3 +998,28 @@ input[type="date"].input { color-scheme:light; }
 @media (max-width:620px) {
   .mood-reset-btn { width:100%; padding:11px 16px; }
 }
+
+/* ---------- 清空心情数据按钮（小号胶囊 · 底部右对齐） ---------- */
+.mood-reset-btn {
+  appearance:none; font-family:inherit; cursor:pointer;
+  display:inline-flex; align-items:center; gap:5px;
+  padding:6px 12px; border-radius:999px;
+  font-size:11.5px; font-weight:550; color:var(--text-secondary);
+  border:1px solid rgba(var(--tint-rgb, var(--accent-primary-rgb)),.26);
+  background:linear-gradient(140deg, rgba(var(--tint-rgb, var(--accent-primary-rgb)),.07), rgba(255,255,255,.5));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55), 0 1px 5px rgba(30,45,90,.04);
+  transition:all .18s ease; white-space:nowrap;
+  -webkit-tap-highlight-color:transparent;
+}
+.mood-reset-btn svg { width:13px; height:13px; }
+.mood-reset-btn:hover {
+  color:var(--text-primary); border-color:rgba(var(--tint-rgb, var(--accent-primary-rgb)),.45);
+  background:linear-gradient(140deg, rgba(var(--tint-rgb, var(--accent-primary-rgb)),.15), rgba(255,255,255,.65));
+  transform:translateY(-1px);
+}
+.mood-reset-btn:active { transform:scale(.96); }
+.mood-reset-btn:focus-visible { outline:2px solid rgba(var(--tint-rgb, var(--accent-primary-rgb)),.4); outline-offset:2px; }
+/* 手机端保持小号胶囊（覆盖先前全宽规则） */
+@media (max-width:620px) {
+  .mood-reset-btn { width:auto; padding:7px 13px; }
+}
