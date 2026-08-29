@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#d9dff2">
+  <meta name="theme-color" content="#dfe4f4">
   <meta name="description" content="惜晷阁：待办、番茄钟、记账、学习进度、艾宾浩斯背单词、目标与时间表，手机电脑云同步">
   <title>惜晷阁 · 玻璃工作台</title>
   <link rel="manifest" href="manifest.json">
@@ -91,8 +91,7 @@
                 <div class="quote-mark">“</div>
                 <p class="quote-text" id="quoteText"></p>
                 <p class="quote-meta" id="quoteMeta"></p>
-                <p class="quote-tip">轻触换一句 · 每 5 分钟自动轮换</p>
-              </div>
+                </div>
             </div>
             </div>
 
@@ -144,6 +143,7 @@
                   <span class="mood-pie" id="moodPie"></span>
                   <div class="mood-stat" id="moodStat"></div>
                 </div>
+                <button class="btn ghost small mood-reset" id="moodResetBtn" type="button">清空心情数据</button>
                 <p class="mood-week-summary" id="moodWeekSummary"></p>
               </div>
             </div>
@@ -178,6 +178,14 @@
             <div class="card span-3" data-tint="amber">
               <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>每周时间表</h2><button class="btn ghost small" id="ttAdd" type="button">+ 安排</button></div>
               <div class="card-body tt-body" id="timetable"></div>
+            </div>
+
+            <div class="card span-12" data-tint="violet">
+              <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg></span>心情回顾</h2><span class="card-meta" id="recallMeta">近 14 天 · 点击某一天回溯记录</span></div>
+              <div class="card-body">
+                <div class="recall-axis" id="recallAxis"></div>
+                <p class="mood-week-summary" id="moodLinkInsight"></p>
+              </div>
             </div>
           </div>
         </section>
