@@ -963,49 +963,70 @@
       '心情明亮的一天，这样的日子值得被好好记住。',
       '笑出来的次数变多了，今天的你比昨天更懂得取悦自己。',
       '开心的情绪在扩散，趁状态好，去做一点平时不敢做的事。',
-      '今天是那种很多年后想起来还会嘴角上扬的日子。'
+      '今天是那种很多年后想起来还会嘴角上扬的日子。',
+      '快乐的证据藏在今天的记录里，这样的日子多多益善。',
+      '情绪在高点，记得拥抱一下身边分享这份好心情的人。',
+      '今天的世界对你温柔，你也把温柔还给了它。'
     ],
     flow: [
       '今天进入了难得的心流，事情一件件被推平，这种手感要趁热记录下来。',
       '状态拉满的一天，效率本身就是最好的正反馈。',
       '今天的你像上了发条，但步调依然是自己的，很难得。',
       '思绪清晰、推进顺畅，把今天的工作方式复盘一下，它值得复用。',
-      '高效不是偶然，今天的节奏值得被写进你的方法库里。'
+      '高效不是偶然，今天的节奏值得被写进你的方法库里。',
+      '今天的执行力和判断力都在线，敢想也敢做。',
+      '一个个任务被清空的感觉太好了，这就是掌控感。',
+      '高效的秘诀今天又被你验证了一遍：开始做，就已经赢了一半。'
     ],
     focus: [
       '今天的注意力很集中，世界很吵，但你没有被打断。',
       '专注是你今天送给自己的礼物，沉进去的时间最值钱。',
       '能坐得住、沉得下，今天的深度超过大多数人。',
       '今天的专注像一层滤镜，把杂音都隔在了外面。',
-      '专注的时间过得最快，也最让人踏实。'
+      '专注的时间过得最快，也最让人踏实。',
+      '今天的心很定，坐下来就能进入状态，这是可以练出来的超能力。',
+      '专注让你忘记了时间，这样的时刻越多越好。',
+      '不被打扰的一天，效率与满足感双双在线。'
     ],
     calm: [
       '今天心里很静，像湖面没有风，适合想清楚一些事。',
       '平静不是没有波澜，而是波澜被你稳稳接住了。',
       '今天节奏不快，但每一步都踩得很稳。',
       '情绪在线、心态松弛，这种平衡感是长期修炼的结果。',
-      '平静的一天也有它的分量，它让你有力气走更远。'
+      '平静的一天也有它的分量，它让你有力气走更远。',
+      '今天的松弛感很难得，不慌不忙也是一种生产力。',
+      '心里不装事，脚步就轻，今天的你做到了。',
+      '淡而稳定的一天，像温水一样滋养人。'
     ],
     tired: [
       '今天的疲惫是真实存在的，别硬撑，先把电量充回来。',
       '身体在提醒你慢一点，休息不是偷懒，是节奏的一部分。',
       '今天电量见底了，允许自己早点收工，明天再战。',
       '累的时候降低期待，完成比完美重要。',
-      '疲惫被你记下来了，它会帮你找到更适合自己的强度。'
+      '疲惫被你记下来了，它会帮你找到更适合自己的强度。',
+      '今天累意袭来，别硬扛，安排一件小事犒劳自己。',
+      '疲惫也是身体的诚实反馈，听它的，慢下来。',
+      '今天的倦意提醒你：节奏可以调，方向没变就很好。'
     ],
     irr: [
       '今天有点烦躁，情绪来了不用赶，它待一会儿自己会走。',
       '烦躁是信号不是敌人，它在告诉你有些事该调整了。',
       '今天的火气记得找个出口，运动、音乐或者早点睡都行。',
       '被小事点燃的一天，先深呼吸，重要决定明天再做。',
-      '烦躁被记录下来就够了，能觉察它的人已经很厉害。'
+      '烦躁被记录下来就够了，能觉察它的人已经很厉害。',
+      '今天的小情绪不影响你是个好人，深呼吸，翻篇。',
+      '烦躁上了头也没关系，你已经学会了给它记一笔。',
+      '今天有点上头，睡前放下它，明天又是新的一天。'
     ],
     down: [
       '今天情绪偏低，允许自己慢一点，你不需要每天都满电。',
       '低落的日子也是日子的一部分，你今天能记录下来，已经是自救。',
       '今天辛苦了，哪怕什么都没做成，好好活着就值得肯定。',
       '把难过写下来之后，它就轻了一点，明天试试晒晒太阳。',
-      '低谷不是终点，它只是节奏里的一个休止符。'
+      '低谷不是终点，它只是节奏里的一个休止符。',
+      '今天心情有点沉，记得给自己一个拥抱，你已经做得够好了。',
+      '低落被你温柔地记下，它会成为明天好转的伏笔。',
+      '情绪的雨天总会放晴，今天先照顾好自己。'
     ]
   };
   const SUMMARY_COMBO = {
@@ -1092,12 +1113,19 @@
     '今天的心情很丰富，像天气一样多变——这不代表不稳定，而是你在认真地生活。',
     '多种情绪在一天里轮番登场，能全部接住的你，比想象中更有韧性。',
     '今天情绪的层次很多，好的坏的最后都成了你的经历，都值得被记录。',
-    '复杂的一天不必强行总结，你已经如实记下了它，这就够了。'
+    '复杂的一天不必强行总结，你已经如实记下了它，这就够了。',
+      '今天的情绪像调色盘，多种颜色混在一起，但都是你画下的。',
+      '一天里经历了这么多起伏，你的内心比想象中辽阔。',
+      '情绪的多与杂不是负担，是你对生活认真感受的证据。',
+      '复杂的日常正在塑造一个更立体的你，继续记录下去。'
   ];
   const SUMMARY_MIX2 = [
     '今天{a}和{b}交织在一起，情绪不是单选题，你的感受都很真实。',
     '{a}与{b}同一天出现，说明今天过得并不平淡，你体验得很充分。',
-    '在{a}和{b}之间切换的一天，能同时容纳两种情绪，说明你的内核很稳。'
+    '在{a}和{b}之间切换的一天，能同时容纳两种情绪，说明你的内核很稳。',
+      '今天{a}和{b}轮流登场，一天之内尝到两种滋味，这就是真实的日常。',
+      '{a}里掺着{b}，复杂但有味道，这样的日子反而让人记得牢。',
+      '一半{a}一半{b}，你的情绪光谱今天很宽。'
   ];
   function pickSummary(pool, seed) {
     return pool[Math.abs(seed) % pool.length];
@@ -1156,22 +1184,59 @@
         renderMood(); renderRhythm();
       }));
     }
-    // 近 14 天柱状（高度=当天最新状态分值，颜色=状态色）
+    // 近 14 天柱状：颜色=当天占比最大的心情；五五开体现两种
     const bars = $('#moodBars');
     if (bars) {
       const cols = Array.from({ length: 14 }, (_, i) => {
         const d = new Date(); d.setDate(d.getDate() - (13 - i));
         const key = todayStr(d);
         const list = moodEntries(key);
-        const m = list.length ? moodOf(list[list.length - 1].m) : null;
-        return { key, label: `${d.getMonth() + 1}/${d.getDate()}`, m, cnt: list.length, today: key === t };
+        const tally = {};
+        for (const r of list) { const m = moodOf(r.m); if (m) tally[m.k] = (tally[m.k] || 0) + 1; }
+        const ranked = Object.entries(tally).sort((a, b) => b[1] - a[1]).map(([k]) => moodOf(k)).filter(Boolean);
+        const top = ranked[0] || null;
+        const tie = ranked.length > 1 && ranked[0].v === undefined ? false : (ranked.length > 1 && top && ranked[1] && tally[ranked[0].k] === tally[ranked[1].k]);
+        return { key, label: `${d.getMonth() + 1}/${d.getDate()}`, m: top, tie, second: tie ? ranked[1] : null, cnt: list.length, today: key === t };
       });
-      bars.innerHTML = cols.map((c) => `
-        <span class="mood-bar ${c.today ? 'today' : ''}" title="${c.key}${c.m ? ' · ' + c.m.n : ' · 未记录'}">
-          <i style="height:${c.m ? Math.round((c.m.v / 5) * 100) : 6}%;${c.m ? `background:${c.m.c}` : ''}"></i>
+      bars.innerHTML = cols.map((c) => {
+        let bg = 'rgba(20,30,60,.1)';
+        if (c.m && c.tie && c.second) bg = `linear-gradient(180deg, ${c.m.c} 50%, ${c.second.c} 50%)`;
+        else if (c.m) bg = c.m.c;
+        return `
+        <span class="mood-bar ${c.today ? 'today' : ''}" title="${c.key}${c.m ? ' · ' + c.m.n + (c.tie ? ' / ' + c.second.n : '') : ' · 未记录'}">
+          <i style="height:${c.m ? Math.round((c.m.v / 5) * 100) : 6}%;background:${bg}"></i>
           <em>${c.label.split('/')[1]}</em>
-        </span>`).join('');
+        </span>`;
+      }).join('');
     }
+    // 近 14 天总结（按记录数据生成洞察）
+    const weekSum = $('#moodWeekSummary');
+    if (weekSum) {
+      const keys14 = Array.from({ length: 14 }, (_, i) => { const d = new Date(); d.setDate(d.getDate() - (13 - i)); return todayStr(d); });
+      const recDays = keys14.filter((k) => (state.mood.days || {})[k]).length;
+      const tally14 = {};
+      for (const k of keys14) for (const r of moodEntries(k)) { const m = moodOf(r.m); if (m) tally14[m.k] = (tally14[m.k] || 0) + 1; }
+      const total14 = Object.values(tally14).reduce((a, b) => a + b, 0);
+      const ranked = Object.entries(tally14).sort((a, b) => b[1] - a[1]).map(([k, c]) => ({ m: moodOf(k), c }));
+      const pos = (tally14['happy'] || 0) + (tally14['flow'] || 0) + (tally14['focus'] || 0) + (tally14['calm'] || 0);
+      const posRate = total14 ? Math.round((pos / total14) * 100) : 0;
+      let txt;
+      if (!recDays) txt = '近 14 天还没有记录，从今天开始，慢慢积累属于你的状态曲线。';
+      else {
+        const top = ranked[0];
+        const head = `近 14 天记录了 ${recDays} 天、共 ${total14} 条状态`;
+        if (top) {
+          const tail = posRate >= 60
+            ? `正向状态占比 ${posRate}%，你的整体节奏相当健康，继续保持。`
+            : posRate >= 40
+              ? `正向占比 ${posRate}%，有起有落，注意在低落日给自己留缓冲。`
+              : `正向占比只有 ${posRate}%，最近压力不小，安排点让自己开心的事。`;
+          txt = `${head}，主导状态是「${top.m.n}」（${top.c} 条）。${tail}`;
+        } else txt = head + '。';
+      }
+      weekSum.textContent = txt;
+    }
+
     // 今日心情占比饼图（今日各状态条目占比，样式与位置不变）
     const pie = $('#moodPie');
     if (pie) {
@@ -1231,6 +1296,14 @@
         card.classList.add('flip');
       });
       quoteTimer = setInterval(randomQuote, 300000); // 5 分钟轮换
+      /* 异步加载寄语库 JSON（fetch 需 http(s) 环境） */
+      fetch('quotes-data.json').then((r) => r.json()).then((list) => {
+        window.QUOTES = list;
+        randomQuote();
+      }).catch(() => {
+        const m = $('#quoteMeta');
+        if (m) m.textContent = '寄语库加载失败（请通过本地服务或线上访问）';
+      });
     }
     randomQuote();
   }
