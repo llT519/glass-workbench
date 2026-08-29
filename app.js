@@ -1256,7 +1256,7 @@
       if (meta) meta.textContent = total ? `共 ${total} 条` : '';
       const reset = $('#moodResetBtn');
       if (reset) {
-        reset.hidden = !total;
+        reset.hidden = false;
         if (!reset.dataset.bound) {
           reset.dataset.bound = '1';
           reset.addEventListener('click', () => {
