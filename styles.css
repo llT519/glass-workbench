@@ -1084,7 +1084,7 @@ input[type="date"].input { color-scheme:light; }
 .life-milestones-body { display:flex; flex-direction:column; gap:8px; }
 .ms-card {
   display:flex; flex-direction:column; gap:4px; position:relative;
-  padding:12px 14px 11px 42px; border-radius:15px;
+  padding:12px 14px 11px 42px; padding-right:34px; border-radius:15px;
   border:1px solid rgba(var(--tint-rgb),.22); background:rgba(255,255,255,.5);
   transition:all .18s ease;
 }
@@ -1123,4 +1123,40 @@ input[type="date"].input { color-scheme:light; }
 @media (max-width:620px) {
   .life-vision-card, .life-milestones-card, .life-bucket-card { grid-column:span 12; }
   .life-vision-inner { padding:16px 16px 13px; }
+}
+
+/* 里程碑删除小钮（右上角） */
+.ms-del {
+  position:absolute; top:8px; right:8px; width:20px; height:20px;
+  display:grid; place-items:center; border-radius:50%;
+  border:1px solid rgba(224,72,95,.28); background:rgba(224,72,95,.06);
+  color:#d96a78; font-size:10px; cursor:pointer; opacity:.55;
+  transition:all .15s ease; -webkit-tap-highlight-color:transparent;
+}
+.ms-del:hover { opacity:1; background:rgba(224,72,95,.14); border-color:rgba(224,72,95,.5); transform:scale(1.08); }
+/* 新增里程碑按钮（渐变胶囊，悬停发光） */
+.ms-add-btn {
+  appearance:none; font-family:inherit; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  width:100%; padding:10px 0; border-radius:13px;
+  font-size:12.5px; font-weight:600; color:var(--text-secondary);
+  border:1px dashed rgba(var(--tint-rgb, var(--accent-primary-rgb)),.4);
+  background:linear-gradient(140deg, rgba(var(--tint-rgb, var(--accent-primary-rgb)),.08), rgba(255,255,255,.5));
+  transition:all .18s ease; -webkit-tap-highlight-color:transparent;
+}
+.ms-add-btn:hover {
+  color:var(--text-primary);
+  border-style:solid; border-color:rgba(var(--tint-rgb, var(--accent-primary-rgb)),.55);
+  background:linear-gradient(140deg, rgba(var(--tint-rgb, var(--accent-primary-rgb)),.16), rgba(255,255,255,.68));
+  box-shadow:0 4px 14px rgba(var(--tint-rgb, var(--accent-primary-rgb)),.16);
+  transform:translateY(-1px);
+}
+.ms-add-btn:active { transform:scale(.98); }
+/* 清单卡：加入按钮同风格（与新增里程碑呼应） */
+.life-bucket-card .btn.primary {
+  border-radius:13px; font-weight:600;
+}
+/* 愿景卡编辑提示条 */
+.life-vision-inner small {
+  display:inline-flex; align-items:center; gap:5px;
 }
