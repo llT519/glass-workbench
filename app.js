@@ -48,7 +48,7 @@
     vocab: { words: [] },
     goals: [],
     life: {
-      vision: '以笔为剑，把世界读成自己的书',
+      visions: [],
       milestones: [
         { key: 'start', title: '启程', note: '完成一件一直不敢开始的难事', done: false },
         { key: 'journey', title: '远征', note: '持续深耕一个领域三年以上', done: false },
@@ -659,32 +659,58 @@
 
   /* ================= 人生目标（三张独立卡片，全部内联可编辑） ================= */
   function renderLife() {
-    const life = state.life || { vision: '', milestones: [], bucket: [] };
-    const vision = $('#lifeVisionText');
-    if (vision) vision.textContent = life.vision || '写下你的一生所向';
+    const life = state.life || { visions: [], milestones: [], bucket: [] };
+    /* 兼容旧单条愿景：迁移为数组 */
+    if (!Array.isArray(life.visions)) {
+      life.visions = (life.vision && life.vision.trim())
+        ? [{ id: 'v' + Date.now().toString(36), text: life.vision.trim() }] : [];
+      saveModule('life');
+    }
+    /* 多愿景列表：每条点文字直接编辑，✕ 删除，底部 + 新增 */
     const inner = $('#lifeVisionEdit');
     if (inner) {
-      const p = document.createElement('p');
-      p.id = 'lifeVisionText';
-      p.className = 'life-vision-text';
-      p.textContent = life.vision || '写下你的一生所向';
-      p.title = '点击编辑';
-      p.contentEditable = true;
-      p.dataset.plain = '1';
-      inner.replaceChildren(p);
-      if (!p.dataset.bound) {
-        p.dataset.bound = '1';
-        const save = () => {
-          const v = (p.textContent || '').trim();
-          life.vision = v;
+      const list = $('#lifeVisionList');
+      if (list) {
+        list.innerHTML = life.visions.length ? life.visions.map((v, i) => `
+          <div class="vision-item">
+            <p class="life-vision-text" contenteditable="true" data-vi="${i}" spellcheck="false">${esc(v.text || '')}</p>
+            <button class="vision-del" data-vdel="${i}" type="button" aria-label="删除愿景">✕</button>
+          </div>`).join('') : '<p class="hint">还没有愿景，点下方「＋ 新增愿景」写下第一个</p>';
+        $$('p.life-vision-text', list).forEach((el) => el.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); el.blur(); }
+        }));
+        $$('p.life-vision-text', list).forEach((el) => el.addEventListener('blur', () => {
+          const v = life.visions[Number(el.dataset.vi)];
+          if (!v) return;
+          v.text = (el.textContent || '').trim();
+          el.textContent = v.text;
           saveModule('life');
-          toast(v ? '愿景已更新' : '愿景已清空');
-        };
-        p.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); p.blur(); }
-        });
-        p.addEventListener('blur', save);
+        }));
+        $$('[data-vdel]', list).forEach((btn) => btn.addEventListener('click', () => {
+          life.visions.splice(Number(btn.dataset.vdel), 1);
+          saveModule('life');
+          renderLife();
+          toast('愿景已删除');
+        }));
       }
+      const add = $('#lifeVisionAdd');
+      if (add && !add.dataset.bound) {
+        add.dataset.bound = '1';
+        add.addEventListener('click', () => {
+          const t = prompt('一条新的愿景（一生所向）：', '');
+          if (t === null) return;
+          const text = (t || '').trim();
+          if (!text) { toast('愿景不能为空'); return; }
+          life.visions.push({ id: 'v' + Date.now().toString(36), text });
+          saveModule('life');
+          renderLife();
+          toast('愿景已新增');
+        });
+      }
+      const meta = $('#lifeVisionMeta');
+      if (meta) meta.textContent = life.visions.length ? `共 ${life.visions.length} 条 · 点击文字编辑` : '点击文字编辑 · 可增可删';
+      const lMeta = $('#lifeMeta');
+      if (lMeta) lMeta.textContent = `愿景 ${life.visions.length} 条`;
     }
     // 里程碑：三段，可编辑标题/描述，点圆点切换完成
     const ms = $('#lifeMilestonesBody');
