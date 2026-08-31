@@ -697,14 +697,14 @@
       if (add && !add.dataset.bound) {
         add.dataset.bound = '1';
         add.addEventListener('click', () => {
-          const t = prompt('一条新的愿景（一生所向）：', '');
-          if (t === null) return;
-          const text = (t || '').trim();
-          if (!text) { toast('愿景不能为空'); return; }
-          life.visions.push({ id: 'v' + Date.now().toString(36), text });
+          /* 原生内联：直接追加一条空愿景并聚焦输入 */
+          life.visions.push({ id: 'v' + Date.now().toString(36), text: '' });
           saveModule('life');
           renderLife();
-          toast('愿景已新增');
+          const items = document.querySelectorAll('#lifeVisionList .life-vision-text');
+          const last = items[items.length - 1];
+          if (last) { last.focus(); }
+          toast('新愿景已就位，直接输入即可');
         });
       }
       const meta = $('#lifeVisionMeta');
@@ -760,18 +760,19 @@
       if (!addBtn.dataset.bound) {
         addBtn.dataset.bound = '1';
         addBtn.addEventListener('click', () => {
-          const title = prompt('新里程碑名称（如：掌握一门外语）', '');
-          if (!title || !title.trim()) return;
-          const note = prompt('一句描述（可留空）', '');
+          /* 原生内联：直接追加一个空里程碑并聚焦标题输入 */
           life.milestones.push({
             key: 'ms' + Date.now().toString(36),
-            title: title.trim(),
-            note: (note || '').trim(),
+            title: '',
+            note: '',
             done: false
           });
           saveModule('life');
           renderLife();
-          toast('里程碑已新增');
+          const titles = document.querySelectorAll('#lifeMilestonesBody .ms-title');
+          const last = titles[titles.length - 1];
+          if (last) { last.focus(); }
+          toast('新里程碑已就位，直接输入名称');
         });
       }
       ms.appendChild(addBtn);
