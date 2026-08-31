@@ -1160,3 +1160,51 @@ input[type="date"].input { color-scheme:light; }
 .life-vision-inner small {
   display:inline-flex; align-items:center; gap:5px;
 }
+
+/* ---------- 多愿景列表（可增可删，点文字直接编辑） ---------- */
+#lifeVisionList { display:flex; flex-direction:column; gap:8px; }
+.vision-item {
+  position:relative; display:flex; align-items:center; gap:8px;
+  padding:12px 30px 12px 14px; border-radius:14px;
+  border:1px solid rgba(var(--tint-rgb),.2); background:rgba(255,255,255,.5);
+  transition:all .18s ease;
+}
+.vision-item:hover { border-color:rgba(var(--tint-rgb),.38); background:rgba(255,255,255,.72); }
+.life-vision-text {
+  flex:1; min-width:0; margin:0; outline:none; cursor:text;
+  font-family:Georgia,"Noto Serif SC","Songti SC","SimSun",serif;
+  font-size:clamp(16px, 1.6vw, 20px); line-height:1.65; color:var(--text-primary);
+  letter-spacing:.03em; text-wrap:balance;
+}
+.life-vision-text:focus { background:rgba(255,255,255,.85); border-radius:8px; }
+.life-vision-text:empty::before { content:attr(data-ph); color:var(--text-tertiary); opacity:.6; }
+.vision-del {
+  position:absolute; right:8px; top:50%; transform:translateY(-50%);
+  width:20px; height:20px; border-radius:50%; display:grid; place-items:center;
+  border:1px solid rgba(224,72,95,.28); background:rgba(224,72,95,.06);
+  color:#d96a78; font-size:10px; cursor:pointer; opacity:.55;
+  transition:all .15s ease; -webkit-tap-highlight-color:transparent;
+}
+.vision-del:hover { opacity:1; background:rgba(224,72,95,.14); border-color:rgba(224,72,95,.5); transform:translateY(-50%) scale(1.08); }
+/* 新增愿景按钮（与里程碑新增同风格，渐变胶囊） */
+.vision-add-btn {
+  appearance:none; font-family:inherit; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  width:100%; padding:9px 0; border-radius:12px;
+  font-size:12px; font-weight:600; color:var(--text-secondary);
+  border:1px dashed rgba(var(--tint-rgb),.4);
+  background:linear-gradient(140deg, rgba(var(--tint-rgb),.08), rgba(255,255,255,.5));
+  transition:all .18s ease; -webkit-tap-highlight-color:transparent;
+  margin-top:2px;
+}
+.vision-add-btn:hover {
+  color:var(--text-primary); border-style:solid; border-color:rgba(var(--tint-rgb),.55);
+  background:linear-gradient(140deg, rgba(var(--tint-rgb),.16), rgba(255,255,255,.68));
+  box-shadow:0 4px 14px rgba(var(--tint-rgb),.16); transform:translateY(-1px);
+}
+.vision-add-btn:active { transform:scale(.98); }
+.vision-add-btn:focus-visible { outline:2px solid rgba(var(--tint-rgb),.4); outline-offset:2px; }
+@media (max-width:620px) {
+  .life-vision-text { font-size:16.5px; }
+  .vision-item { padding:11px 28px 11px 12px; }
+}
