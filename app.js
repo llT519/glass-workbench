@@ -28,7 +28,7 @@
   /* ================= 状态管理 ================= */
   const STORE_KEY = 'workbench_state_v1';
   const TS_KEY = 'workbench_module_ts_v1';
-  const MODULES = ['settings', 'profile', 'todos', 'pomodoro', 'mood', 'notes', 'navLinks', 'ledger', 'study', 'vocab', 'goals', 'schedule'];
+  const MODULES = ['settings', 'profile', 'todos', 'pomodoro', 'mood', 'notes', 'navLinks', 'ledger', 'study', 'vocab', 'goals', 'life', 'schedule'];
 
   const DEFAULT_STATE = {
     settings: { palette: 'US-00', intensity: .55, ambientStrength: .42, surfaceTint: .28, fluidQuality: 'auto' },
@@ -47,6 +47,15 @@
     study: { items: [] },
     vocab: { words: [] },
     goals: [],
+    life: {
+      vision: '以笔为剑，把世界读成自己的书',
+      milestones: [
+        { key: 'start', title: '启程', note: '完成一件一直不敢开始的难事', done: false },
+        { key: 'journey', title: '远征', note: '持续深耕一个领域三年以上', done: false },
+        { key: 'arrive', title: '抵达', note: '活成自己敬佩的样子', done: false }
+      ],
+      bucket: []
+    },
     schedule: { '1': [], '2': [], '3': [], '4': [], '5': [], '6': [], '7': [] }
   };
 
@@ -646,6 +655,88 @@
       state.ledger.records = recs.filter((x) => x.id !== btn.dataset.ledel);
       saveModule('ledger'); renderLedger(); updateFluidCards();
     }));
+  }
+
+  /* ================= 人生目标（愿景 + 里程碑 + 此生清单） ================= */
+  function renderLife() {
+    const life = state.life || { vision: '', milestones: [], bucket: [] };
+    // 愿景宣言
+    const vision = $('#lifeVisionText');
+    if (vision) vision.textContent = life.vision || '写下你的一生所向';
+    const visionBox = $('#lifeVision');
+    if (visionBox && !visionBox.dataset.bound) {
+      visionBox.dataset.bound = '1';
+      visionBox.addEventListener('click', () => {
+        const v = prompt('编辑你的<人生愿景>（一句话，一生所向）：', life.vision || '');
+        if (v === null) return;
+        life.vision = v.trim();
+        saveModule('life');
+        renderLife();
+        toast('人生愿景已更新');
+      });
+    }
+    // 里程碑旅程：启程 → 远征 → 抵达
+    const ms = $('#lifeMilestones');
+    if (ms) {
+      ms.innerHTML = life.milestones.map((m) => `
+        <button type="button" class="ms-cell ${m.done ? 'done' : ''}" data-ms="${m.key}">
+          <i class="ms-dot">${m.done ? '✓' : ''}</i>
+          <b>${m.title}</b>
+          <small>${m.note || ''}</small>
+        </button>`).join('');
+      $$('[data-ms]', ms).forEach((btn) => btn.addEventListener('click', () => {
+        const m = life.milestones.find((x) => x.key === btn.dataset.ms);
+        if (!m) return;
+        m.done = !m.done;
+        saveModule('life');
+        renderLife();
+        toast(m.done ? `里程碑「${m.title}」达成 ✦` : `「${m.title}」已回到未完成`);
+      }));
+    }
+    // 此生清单
+    const list = $('#bucketList');
+    if (list) {
+      list.innerHTML = life.bucket.length ? life.bucket.map((b, i) => `
+        <li class="${b.done ? 'done' : ''}">
+          <input type="checkbox" data-bi="${i}" ${b.done ? 'checked' : ''}>
+          <span>${esc(b.text)}</span>
+          <button class="del" data-bdel="${i}" type="button" aria-label="删除">✕</button>
+        </li>`).join('') : '<li class="vocab-empty">还没有想做的事，往清单里加一笔吧</li>';
+      $$('input[type="checkbox"]', list).forEach((cb) => cb.addEventListener('change', () => {
+        const b = life.bucket[Number(cb.dataset.bi)];
+        if (!b) return;
+        b.done = cb.checked;
+        saveModule('life');
+        renderLife();
+        if (b.done) toast('「' + b.text + '」已完成 ✓');
+      }));
+      $$('[data-bdel]', list).forEach((btn) => btn.addEventListener('click', () => {
+        life.bucket.splice(Number(btn.dataset.bdel), 1);
+        saveModule('life');
+        renderLife();
+      }));
+    }
+    // 表单
+    const form = $('#bucketForm');
+    if (form && !form.dataset.bound) {
+      form.dataset.bound = '1';
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const t = $('#bucketInput').value.trim();
+        if (!t) { toast('写一件想做的事'); return; }
+        life.bucket.push({ text: t, done: false });
+        $('#bucketInput').value = '';
+        saveModule('life');
+        renderLife();
+        toast('已加入此生清单');
+      });
+    }
+    const meta = $('#lifeMeta');
+    if (meta) {
+      const doneMs = life.milestones.filter((m) => m.done).length;
+      const doneB = life.bucket.filter((b) => b.done).length;
+      meta.textContent = `里程碑 ${doneMs}/${life.milestones.length} · 清单 ${doneB}/${life.bucket.length}`;
+    }
   }
 
   /* ================= 目标 ================= */
@@ -1442,6 +1533,7 @@
     window.__rs = window.__rs || []; try { renderVocab(); } catch (e) { window.__rs.push('FAIL:' + name + ':' + e.message); throw e; } window.__rs.push(name);
     window.__rs = window.__rs || []; try { renderTimetable(); } catch (e) { window.__rs.push('FAIL:' + name + ':' + e.message); throw e; } window.__rs.push(name);
     window.__rs = window.__rs || []; try { renderLedger(); } catch (e) { window.__rs.push('FAIL:' + name + ':' + e.message); throw e; } window.__rs.push(name);
+    window.__rs = window.__rs || []; try { renderLife(); } catch (e) { window.__rs.push('FAIL:' + name + ':' + e.message); throw e; } window.__rs.push(name);
     window.__rs = window.__rs || []; try { renderGoals(); } catch (e) { window.__rs.push('FAIL:' + name + ':' + e.message); throw e; } window.__rs.push(name);
     window.__rs = window.__rs || []; try { renderWeekStats(); } catch (e) { window.__rs.push('FAIL:' + name + ':' + e.message); throw e; } window.__rs.push(name);
     window.__rs = window.__rs || []; try { renderNavGrid(); } catch (e) { window.__rs.push('FAIL:' + name + ':' + e.message); throw e; } window.__rs.push(name);
