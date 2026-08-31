@@ -694,6 +694,7 @@
           <button type="button" class="ms-toggle" data-ms="${m.key}" aria-label="切换完成">${m.done ? '✓' : ''}</button>
           <b class="ms-title" contenteditable="true" data-ms-key="${m.key}" spellcheck="false">${esc(m.title)}</b>
           <small class="ms-note" contenteditable="true" data-ms-key="${m.key}" spellcheck="false">${esc(m.note || '')}</small>
+          <button type="button" class="ms-del" data-msdel="${m.key}" aria-label="删除里程碑">✕</button>
         </div>`).join('');
       $$('[data-ms]', ms).forEach((btn) => btn.addEventListener('click', () => {
         const m = life.milestones.find((x) => x.key === btn.dataset.ms);
@@ -702,6 +703,15 @@
         saveModule('life');
         renderLife();
         toast(m.done ? `里程碑「${m.title}」达成 ✦` : `「${m.title}」回到未完成`);
+      }));
+      $$('[data-msdel]', ms).forEach((btn) => btn.addEventListener('click', () => {
+        const m = life.milestones.find((x) => x.key === btn.dataset.msdel);
+        if (!m) return;
+        if (!confirm(`删除里程碑「${m.title}」？`)) return;
+        life.milestones = life.milestones.filter((x) => x.key !== m.key);
+        saveModule('life');
+        renderLife();
+        toast('里程碑已删除');
       }));
       $$('[data-ms-key]', ms).forEach((el) => el.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); el.blur(); }
@@ -714,6 +724,31 @@
         el.textContent = el.classList.contains('ms-title') ? m.title : m.note;
         saveModule('life');
       }));
+    }
+    // 新增里程碑按钮（渲染在里程碑卡底部）
+    if (ms) {
+      const addBtn = document.createElement('button');
+      addBtn.type = 'button';
+      addBtn.className = 'ms-add-btn';
+      addBtn.textContent = '＋ 新增里程碑';
+      if (!addBtn.dataset.bound) {
+        addBtn.dataset.bound = '1';
+        addBtn.addEventListener('click', () => {
+          const title = prompt('新里程碑名称（如：掌握一门外语）', '');
+          if (!title || !title.trim()) return;
+          const note = prompt('一句描述（可留空）', '');
+          life.milestones.push({
+            key: 'ms' + Date.now().toString(36),
+            title: title.trim(),
+            note: (note || '').trim(),
+            done: false
+          });
+          saveModule('life');
+          renderLife();
+          toast('里程碑已新增');
+        });
+      }
+      ms.appendChild(addBtn);
     }
     // 此生清单：添加 / 勾选 / 点文字编辑 / 删除
     const list = $('#bucketList');
