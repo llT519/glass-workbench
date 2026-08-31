@@ -657,49 +657,71 @@
     }));
   }
 
-  /* ================= 人生目标（愿景 + 里程碑 + 此生清单） ================= */
+  /* ================= 人生目标（三张独立卡片，全部内联可编辑） ================= */
   function renderLife() {
     const life = state.life || { vision: '', milestones: [], bucket: [] };
-    // 愿景宣言
     const vision = $('#lifeVisionText');
     if (vision) vision.textContent = life.vision || '写下你的一生所向';
-    const visionBox = $('#lifeVision');
-    if (visionBox && !visionBox.dataset.bound) {
-      visionBox.dataset.bound = '1';
-      visionBox.addEventListener('click', () => {
-        const v = prompt('编辑你的<人生愿景>（一句话，一生所向）：', life.vision || '');
-        if (v === null) return;
-        life.vision = v.trim();
-        saveModule('life');
-        renderLife();
-        toast('人生愿景已更新');
-      });
+    const inner = $('#lifeVisionEdit');
+    if (inner) {
+      const p = document.createElement('p');
+      p.id = 'lifeVisionText';
+      p.className = 'life-vision-text';
+      p.textContent = life.vision || '写下你的一生所向';
+      p.title = '点击编辑';
+      p.contentEditable = true;
+      p.dataset.plain = '1';
+      inner.replaceChildren(p);
+      if (!p.dataset.bound) {
+        p.dataset.bound = '1';
+        const save = () => {
+          const v = (p.textContent || '').trim();
+          life.vision = v;
+          saveModule('life');
+          toast(v ? '愿景已更新' : '愿景已清空');
+        };
+        p.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); p.blur(); }
+        });
+        p.addEventListener('blur', save);
+      }
     }
-    // 里程碑旅程：启程 → 远征 → 抵达
-    const ms = $('#lifeMilestones');
+    // 里程碑：三段，可编辑标题/描述，点圆点切换完成
+    const ms = $('#lifeMilestonesBody');
     if (ms) {
       ms.innerHTML = life.milestones.map((m) => `
-        <button type="button" class="ms-cell ${m.done ? 'done' : ''}" data-ms="${m.key}">
-          <i class="ms-dot">${m.done ? '✓' : ''}</i>
-          <b>${m.title}</b>
-          <small>${m.note || ''}</small>
-        </button>`).join('');
+        <div class="ms-card ${m.done ? 'done' : ''}">
+          <button type="button" class="ms-toggle" data-ms="${m.key}" aria-label="切换完成">${m.done ? '✓' : ''}</button>
+          <b class="ms-title" contenteditable="true" data-ms-key="${m.key}" spellcheck="false">${esc(m.title)}</b>
+          <small class="ms-note" contenteditable="true" data-ms-key="${m.key}" spellcheck="false">${esc(m.note || '')}</small>
+        </div>`).join('');
       $$('[data-ms]', ms).forEach((btn) => btn.addEventListener('click', () => {
         const m = life.milestones.find((x) => x.key === btn.dataset.ms);
         if (!m) return;
         m.done = !m.done;
         saveModule('life');
         renderLife();
-        toast(m.done ? `里程碑「${m.title}」达成 ✦` : `「${m.title}」已回到未完成`);
+        toast(m.done ? `里程碑「${m.title}」达成 ✦` : `「${m.title}」回到未完成`);
+      }));
+      $$('[data-ms-key]', ms).forEach((el) => el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); el.blur(); }
+      }));
+      $$('[data-ms-key]', ms).forEach((el) => el.addEventListener('blur', () => {
+        const m = life.milestones.find((x) => x.key === el.dataset.msKey);
+        if (!m) return;
+        if (el.classList.contains('ms-title')) m.title = (el.textContent || '').trim() || m.title;
+        else m.note = (el.textContent || '').trim();
+        el.textContent = el.classList.contains('ms-title') ? m.title : m.note;
+        saveModule('life');
       }));
     }
-    // 此生清单
+    // 此生清单：添加 / 勾选 / 点文字编辑 / 删除
     const list = $('#bucketList');
     if (list) {
       list.innerHTML = life.bucket.length ? life.bucket.map((b, i) => `
         <li class="${b.done ? 'done' : ''}">
           <input type="checkbox" data-bi="${i}" ${b.done ? 'checked' : ''}>
-          <span>${esc(b.text)}</span>
+          <span contenteditable="true" data-bi="${i}" spellcheck="false">${esc(b.text)}</span>
           <button class="del" data-bdel="${i}" type="button" aria-label="删除">✕</button>
         </li>`).join('') : '<li class="vocab-empty">还没有想做的事，往清单里加一笔吧</li>';
       $$('input[type="checkbox"]', list).forEach((cb) => cb.addEventListener('change', () => {
@@ -710,13 +732,22 @@
         renderLife();
         if (b.done) toast('「' + b.text + '」已完成 ✓');
       }));
+      $$('span[contenteditable="true"]', list).forEach((el) => el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); el.blur(); }
+      }));
+      $$('span[contenteditable="true"]', list).forEach((el) => el.addEventListener('blur', () => {
+        const b = life.bucket[Number(el.dataset.bi)];
+        if (!b) return;
+        b.text = (el.textContent || '').trim() || b.text;
+        el.textContent = b.text;
+        saveModule('life');
+      }));
       $$('[data-bdel]', list).forEach((btn) => btn.addEventListener('click', () => {
         life.bucket.splice(Number(btn.dataset.bdel), 1);
         saveModule('life');
         renderLife();
       }));
     }
-    // 表单
     const form = $('#bucketForm');
     if (form && !form.dataset.bound) {
       form.dataset.bound = '1';
@@ -731,15 +762,19 @@
         toast('已加入此生清单');
       });
     }
-    const meta = $('#lifeMeta');
+    const meta = $('#lifeMeta'), vMeta = $('#lifeVisionMeta'), bMeta = $('#bucketMeta');
     if (meta) {
       const doneMs = life.milestones.filter((m) => m.done).length;
+      meta.textContent = `里程碑 ${doneMs}/${life.milestones.length}`;
+    }
+    if (vMeta) vMeta.textContent = life.vision ? '点击文字直接编辑' : '点击写下愿景';
+    if (bMeta) {
       const doneB = life.bucket.filter((b) => b.done).length;
-      meta.textContent = `里程碑 ${doneMs}/${life.milestones.length} · 清单 ${doneB}/${life.bucket.length}`;
+      bMeta.textContent = life.bucket.length ? `${doneB}/${life.bucket.length} 已完成` : '';
     }
   }
 
-  /* ================= 目标 ================= */
+
   function renderGoals() {
     const wrap = $('#goalList');
     if (!state.goals.length) {
