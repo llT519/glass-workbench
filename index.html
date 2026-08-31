@@ -226,6 +226,32 @@
         <!-- ④ 目标 -->
         <section class="view" data-view="goals" hidden>
           <div class="bento">
+            <!-- 人生目标：愿景 + 里程碑 + 此生清单（长期、定性，与短期可量化目标区分） -->
+            <div class="card life-card span-12" data-tint="gold">
+              <div class="card-head">
+                <h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m3.6 9 16.8 0"/><path d="M12 3a15 15 0 0 1 0 18"/><path d="M12 3a15 15 0 0 0 0 18"/></svg></span>人生目标</h2>
+                <span class="card-meta" id="lifeMeta">一生的方向 · 长期主义</span>
+              </div>
+              <div class="life-body">
+                <!-- 愿景宣言（点击可编辑） -->
+                <div class="life-vision" id="lifeVision" title="点击编辑人生愿景">
+                  <small>我的愿景</small>
+                  <p id="lifeVisionText"></p>
+                </div>
+                <!-- 里程碑旅程：启程·远征·抵达 -->
+                <div class="life-milestones" id="lifeMilestones"></div>
+                <!-- 此生清单：可勾选、可添加 -->
+                <div class="life-bucket">
+                  <small>此生清单</small>
+                  <form class="inline-form" id="bucketForm">
+                    <input class="input" id="bucketInput" type="text" placeholder="想做的一件事，如：去看极光" maxlength="30" autocomplete="off">
+                    <button class="btn primary small" type="submit">加入</button>
+                  </form>
+                  <ul class="bucket-list" id="bucketList"></ul>
+                </div>
+              </div>
+            </div>
+
             <div class="card span-7" data-tint="rose">
               <div class="card-head"><h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></span>目标</h2><button class="btn ghost small" id="goalAdd" type="button">+ 新目标</button></div>
               <div class="card-body" id="goalList"></div>
