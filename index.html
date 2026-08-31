@@ -226,29 +226,38 @@
         <!-- ④ 目标 -->
         <section class="view" data-view="goals" hidden>
           <div class="bento">
-            <!-- 人生目标：愿景 + 里程碑 + 此生清单（长期、定性，与短期可量化目标区分） -->
-            <div class="card life-card span-12" data-tint="gold">
+            <!-- 人生目标（三张并列卡片，均可内联编辑）：愿景 / 里程碑 / 此生清单 -->
+            <div class="card life-vision-card span-5" data-tint="gold">
               <div class="card-head">
-                <h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m3.6 9 16.8 0"/><path d="M12 3a15 15 0 0 1 0 18"/><path d="M12 3a15 15 0 0 0 0 18"/></svg></span>人生目标</h2>
-                <span class="card-meta" id="lifeMeta">一生的方向 · 长期主义</span>
+                <h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m3.6 9 16.8 0"/><path d="M12 3a15 15 0 0 1 0 18"/><path d="M12 3a15 15 0 0 0 0 18"/></svg></span>我的愿景</h2>
+                <span class="card-meta" id="lifeVisionMeta">点击文字直接编辑</span>
               </div>
-              <div class="life-body">
-                <!-- 愿景宣言（点击可编辑） -->
-                <div class="life-vision" id="lifeVision" title="点击编辑人生愿景">
-                  <small>我的愿景</small>
-                  <p id="lifeVisionText"></p>
+              <div class="card-body">
+                <div class="life-vision-inner" id="lifeVisionEdit">
+                  <small>一生所向 · 一句话</small>
                 </div>
-                <!-- 里程碑旅程：启程·远征·抵达 -->
-                <div class="life-milestones" id="lifeMilestones"></div>
-                <!-- 此生清单：可勾选、可添加 -->
-                <div class="life-bucket">
-                  <small>此生清单</small>
-                  <form class="inline-form" id="bucketForm">
-                    <input class="input" id="bucketInput" type="text" placeholder="想做的一件事，如：去看极光" maxlength="30" autocomplete="off">
-                    <button class="btn primary small" type="submit">加入</button>
-                  </form>
-                  <ul class="bucket-list" id="bucketList"></ul>
-                </div>
+              </div>
+            </div>
+
+            <div class="card life-milestones-card span-4" data-tint="cyan">
+              <div class="card-head">
+                <h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v12"/><path d="M18 9v12"/><path d="M6 3 4.5 5"/><path d="M6 6 7.5 4"/><path d="M18 9l-1.5 2"/><path d="M18 12l1.5-2"/></svg></span>里程碑旅程</h2>
+                <span class="card-meta">点击圆点推进 · 点文字编辑</span>
+              </div>
+              <div class="card-body life-milestones-body" id="lifeMilestonesBody"></div>
+            </div>
+
+            <div class="card life-bucket-card span-3" data-tint="violet">
+              <div class="card-head">
+                <h2><span class="hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></span>此生清单</h2>
+                <span class="card-meta" id="bucketMeta"></span>
+              </div>
+              <div class="card-body">
+                <form class="inline-form" id="bucketForm">
+                  <input class="input" id="bucketInput" type="text" placeholder="想做的一件事…" maxlength="30" autocomplete="off">
+                  <button class="btn primary small" type="submit">加入</button>
+                </form>
+                <ul class="bucket-list" id="bucketList"></ul>
               </div>
             </div>
 
