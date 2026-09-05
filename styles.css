@@ -1208,3 +1208,27 @@ input[type="date"].input { color-scheme:light; }
   .life-vision-text { font-size:16.5px; }
   .vision-item { padding:11px 28px 11px 12px; }
 }
+
+/* ---------- 手机端：日期时间轴与14天柱状支持横向滑动（右滑查看全部） ---------- */
+.recall-axis-wrap { overflow-x:auto; }
+@media (max-width:620px) {
+  .recall-axis {
+    display:flex; overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    scroll-snap-type:x mandatory;
+    gap:8px; padding:2px 2px 8px;
+    scrollbar-width:none;
+  }
+  .recall-axis::-webkit-scrollbar { display:none; }
+  .rd-cell {
+    flex:0 0 64px; scroll-snap-align:start;
+    padding:10px 6px 8px;
+  }
+  /* 14天柱状图：同样横向滑动 */
+  .mood-bars {
+    overflow-x:auto; -webkit-overflow-scrolling:touch;
+    scrollbar-width:none; padding-bottom:4px;
+  }
+  .mood-bars::-webkit-scrollbar { display:none; }
+  .mood-bar { flex:0 0 30px; }
+}
