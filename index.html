@@ -11,8 +11,8 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="stylesheet" href="styles.css?v=20260830b">
-  <link rel="stylesheet" href="vendor/fluid-glass-material.css?v=20260830b">
+  <link rel="stylesheet" href="styles.css?v=20260830c">
+  <link rel="stylesheet" href="vendor/fluid-glass-material.css?v=20260830c">
 </head>
 <body class="app-body">
 
@@ -169,6 +169,13 @@
                   <input class="input" id="vocabMeaning" type="text" placeholder="释义，如 放弃" autocomplete="off">
                   <button class="btn primary" type="submit">加入词库</button>
                 </form>
+                <div class="vocab-batch">
+                  <button class="btn ghost small" id="vocabBatchToggle" type="button">⇪ 批量导入</button>
+                  <div class="vocab-batch-panel" id="vocabBatchPanel" hidden>
+                    <textarea class="input" id="vocabBatchText" rows="4" placeholder="每行一个：单词 + 空格/逗号 + 释义&#10;如：&#10;abandon 放弃&#10;serenity, 宁静"></textarea>
+                    <button class="btn primary small" id="vocabBatchBtn" type="button">导入全部</button>
+                  </div>
+                </div>
                 <div class="vocab-review" id="vocabReview"></div>
                 <div class="row-foot"><button class="btn ghost small" id="vocabToggleList" type="button">查看词库</button></div>
                 <ul class="vocab-list" id="vocabList" hidden></ul>
@@ -346,6 +353,7 @@
     </div>
   </div>
 
+  <button class="to-top" id="toTopBtn" type="button" aria-label="回到顶部" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></button>
   <div class="toast" id="toast" role="status"></div>
 
   <script>
@@ -361,11 +369,11 @@
       ]
     };
   </script>
-  <script src="vendor/palette-engine.js?v=20260830b"></script>
-  <script src="vendor/palette-presets.js?v=20260830b"></script>
-  <script src="sync.js?v=20260830b"></script>
-  <script src="vendor/fluid-glass-engine.js?v=20260830b"></script>
-  <script src="app.js?v=20260830b"></script>
+  <script src="vendor/palette-engine.js?v=20260830c"></script>
+  <script src="vendor/palette-presets.js?v=20260830c"></script>
+  <script src="sync.js?v=20260830c"></script>
+  <script src="vendor/fluid-glass-engine.js?v=20260830c"></script>
+  <script src="app.js?v=20260830c"></script>
   <!-- 命令面板（Ctrl+K / 点搜索图标）：全局搜索与快速动作 -->
   <div class="cmdk-backdrop" id="cmdkBackdrop" hidden>
     <div class="cmdk" role="dialog" aria-label="命令面板">
