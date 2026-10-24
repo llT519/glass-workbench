@@ -11,8 +11,8 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="stylesheet" href="styles.css?v=20260829f">
-  <link rel="stylesheet" href="vendor/fluid-glass-material.css?v=20260829f">
+  <link rel="stylesheet" href="styles.css?v=20260830a">
+  <link rel="stylesheet" href="vendor/fluid-glass-material.css?v=20260830a">
 </head>
 <body class="app-body">
 
@@ -356,10 +356,25 @@
       ]
     };
   </script>
-  <script src="vendor/palette-engine.js?v=20260829f"></script>
-  <script src="vendor/palette-presets.js?v=20260829f"></script>
-  <script src="sync.js?v=20260829f"></script>
-  <script src="vendor/fluid-glass-engine.js?v=20260829f"></script>
-  <script src="app.js?v=20260829f"></script>
+  <script src="vendor/palette-engine.js?v=20260830a"></script>
+  <script src="vendor/palette-presets.js?v=20260830a"></script>
+  <script src="sync.js?v=20260830a"></script>
+  <script src="vendor/fluid-glass-engine.js?v=20260830a"></script>
+  <script src="app.js?v=20260830a"></script>
+  <!-- 命令面板（Ctrl+K / 点搜索图标）：全局搜索与快速动作 -->
+  <div class="cmdk-backdrop" id="cmdkBackdrop" hidden>
+    <div class="cmdk" role="dialog" aria-label="命令面板">
+      <div class="cmdk-input-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input class="cmdk-input" id="cmdkInput" type="text" placeholder="搜索待办、单词、目标、清单，或输入命令…" autocomplete="off">
+        <kbd>Esc</kbd>
+      </div>
+      <div class="cmdk-list" id="cmdkList"></div>
+      <div class="cmdk-foot">
+        <span><kbd>↑↓</kbd> 选择</span><span><kbd>↵</kbd> 执行</span><span class="cmdk-count" id="cmdkCount"></span>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
