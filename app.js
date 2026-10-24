@@ -31,7 +31,7 @@
   const MODULES = ['settings', 'profile', 'todos', 'pomodoro', 'mood', 'notes', 'navLinks', 'ledger', 'study', 'vocab', 'goals', 'life', 'schedule'];
 
   const DEFAULT_STATE = {
-    settings: { palette: 'US-00', intensity: .55, ambientStrength: .42, surfaceTint: .28, fluidQuality: 'auto' },
+    settings: { palette: 'US-00', intensity: .55, ambientStrength: .42, surfaceTint: .28, fluidQuality: 'auto', budget: 0 },
     profile: { name: '' },
     todos: [],
     pomodoro: { workMin: 25, restMin: 5, daily: {} },
@@ -235,6 +235,17 @@
     });
     const nick = $('#optNickname');
     nick.value = state.profile.name || '';
+    const bud = $('#optBudget');
+    if (bud) {
+      bud.value = state.settings.budget || '';
+      bud.addEventListener('change', () => {
+        state.settings.budget = Math.max(0, Number(bud.value) || 0);
+        bud.value = state.settings.budget || '';
+        saveModule('settings');
+        renderLedger();
+        toast(state.settings.budget ? `月度预算已设为 ¥${money(state.settings.budget)}` : '月度预算已关闭');
+      });
+    }
     nick.addEventListener('change', () => {
       state.profile.name = nick.value.trim();
       saveModule('profile');
@@ -364,14 +375,26 @@
   function renderTodos() {
     const list = $('#todoList');
     const items = state.todos;
-    list.innerHTML = items.length ? items.map((t) => `
-      <li class="todo-item ${t.done ? 'done' : ''}">
+    const sortedTodos = [...items].sort((a, b) => (b.pin ? 1 : 0) - (a.pin ? 1 : 0));
+    list.innerHTML = sortedTodos.length ? sortedTodos.map((t) => `
+      <li class="todo-item ${t.done ? 'done' : ''}" data-tid="${t.id}">
         <input type="checkbox" data-id="${t.id}" ${t.done ? 'checked' : ''}>
         <span class="txt">${esc(t.text)}</span>
+        <button class="pin-btn ${t.pin ? 'on' : ''}" data-pin="${t.id}" type="button" aria-label="置顶" title="${t.pin ? '取消置顶' : '置顶'}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg>
+        </button>
         <button class="del" data-del="${t.id}" type="button" aria-label="删除">✕</button>
       </li>`).join('') : '<li class="vocab-empty">还没有待办，添加一条吧</li>';
     const done = items.filter((x) => x.done).length;
     $('#todoMeta').textContent = items.length ? `${done}/${items.length} 已完成` : '';
+    $$('[data-pin]', list).forEach((btn) => btn.addEventListener('click', () => {
+      const t = items.find((x) => x.id === btn.dataset.pin);
+      if (!t) return;
+      t.pin = !t.pin;
+      saveModule('todos');
+      renderTodos();
+      toast(t.pin ? '📌 已置顶' : '已取消置顶');
+    }));
     $$('input[type="checkbox"]', list).forEach((cb) => cb.addEventListener('change', () => {
       const t = items.find((x) => x.id === cb.dataset.id);
       if (!t) return;
@@ -411,7 +434,10 @@
           n.text = ta.value;
           n.updatedAt = todayStr();
           saveModule('notes');
-          $('.note-foot small', ta.closest('.note')).textContent = '更新于 ' + n.updatedAt;
+          const foot = $('.note-foot small', ta.closest('.note'));
+          foot.textContent = '✓ 已保存';
+          clearTimeout(foot._t);
+          foot._t = setTimeout(() => { foot.textContent = '更新于 ' + n.updatedAt; }, 2000);
         }, 500);
       });
     });
@@ -635,6 +661,17 @@
           <div class="stat-box"><small>本月支出</small><b class="out">¥ ${money(outSum)}</b></div>
           <div class="stat-box"><small>本月收入</small><b class="in">¥ ${money(inSum)}</b></div>
         </div>
+        ${state.settings.budget > 0 ? (() => {
+          const pct = Math.min(999, Math.round((outSum / state.settings.budget) * 100));
+          const over = outSum > state.settings.budget;
+          const remain = state.settings.budget - outSum;
+          return `<div class="budget-row ${over ? 'over' : ''}">
+            <div class="budget-head"><small>月度预算 ¥${money(state.settings.budget)}</small>
+            <b class="${over ? 'over-txt' : ''}">${over ? `超支 ¥${money(-remain)}` : `剩余 ¥${money(remain)}`}</b></div>
+            <div class="bar"><i class="${over ? 'over-bar' : ''}" style="width:${Math.min(100, pct)}%"></i></div>
+            <small class="budget-pct">${pct}% 已使用</small>
+          </div>`;
+        })() : ''}
         <div>
           <small class="hint" style="display:block;margin-bottom:8px">分类占比（支出）</small>
           ${topCats.length ? topCats.map(([name, sum]) => `
@@ -652,13 +689,14 @@
     const sorted = [...recs].sort((a, b) => (b.date || '').localeCompare(a.date || '') || (b.id > a.id ? 1 : -1)).slice(0, 30);
     $('#ledgerListMeta').textContent = recs.length ? `共 ${recs.length} 条` : '';
     $('#ledgerList').innerHTML = sorted.length ? sorted.map((r) => `
-      <li>
+      <li data-lid="${r.id}" style="cursor:pointer" title="点击编辑这条记录">
         <span class="ico">${CAT_ICON[r.category] || '📦'}</span>
         <span class="mid"><b>${esc(r.note || r.category)}</b><small>${esc(r.date)} · ${esc(r.category)}</small></span>
         <span class="amt ${r.type}">${r.type === 'expense' ? '-' : '+'}¥${money(r.amount)}</span>
         <button class="del" data-ledel="${r.id}" type="button">✕</button>
       </li>`).join('') : '<li class="vocab-empty">还没有记录</li>';
-    $$('[data-ledel]').forEach((btn) => btn.addEventListener('click', () => {
+    $$('[data-ledel]').forEach((btn) => btn.addEventListener('click', (e) => {
+      e.stopPropagation();
       state.ledger.records = recs.filter((x) => x.id !== btn.dataset.ledel);
       saveModule('ledger'); renderLedger(); updateFluidCards();
     }));
@@ -971,6 +1009,12 @@
         btn.disabled = false;
       }
     });
+    $('#syncNowBtn')?.addEventListener('click', async () => {
+      if (!Sync.getConfig().valid) { toast('请先填写并保存云同步配置'); return; }
+      toast('正在同步…');
+      try { await Sync.pollOnce(false); toast('✓ 已同步到最新'); }
+      catch (e) { toast('同步失败：' + (e.message || '网络异常')); }
+    });
     $('#syncOffBtn').addEventListener('click', () => {
       Sync.disconnect();
       $('#syncStatusText').textContent = '已断开云同步，回到本地模式。';
@@ -1105,6 +1149,14 @@
       saveModule('navLinks'); renderNavGrid();
     });
 
+    /* 活动环点击跳转 */
+    $$('.rr-jump').forEach((ring) => ring.addEventListener('click', () => {
+      const target = ring.dataset.jump;
+      if (target === 'study') { switchView('study'); toast('去背单词'); }
+      else if (target === 'todo') { $('#todoInput')?.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+      else if (target === 'mood') { $('#moodChips')?.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+    }));
+
     $('#ledgerTypeSeg').addEventListener('click', (e) => {
       const chip = e.target.closest('.chip');
       if (!chip) return;
@@ -1112,19 +1164,62 @@
       renderLedgerCats();
     });
     $('#ledgerDate').value = todayStr();
+    let editingLedgerId = null;
+    const cancelBtn = $('#ledgerCancelEdit'), submitBtn = $('#ledgerSubmitBtn');
     $('#ledgerForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const amount = Number($('#ledgerAmount').value);
       if (!amount || amount <= 0) { toast('请输入有效金额'); return; }
-      state.ledger.records.push({
-        id: uid(), type: ledgerType, amount,
-        category: $('#ledgerCategory').value,
-        date: $('#ledgerDate').value || todayStr(),
-        note: $('#ledgerNote').value.trim()
-      });
+      if (editingLedgerId) {
+        /* 编辑模式：写回原记录 */
+        const rec = state.ledger.records.find((x) => x.id === editingLedgerId);
+        if (rec) {
+          rec.amount = amount;
+          rec.type = ledgerType;
+          rec.category = $('#ledgerCategory').value;
+          rec.date = $('#ledgerDate').value || todayStr();
+          rec.note = $('#ledgerNote').value.trim();
+        }
+        editingLedgerId = null;
+        cancelBtn.hidden = true;
+        submitBtn.textContent = '保存记录';
+        toast('✓ 记录已更新');
+      } else {
+        state.ledger.records.push({
+          id: uid(), type: ledgerType, amount,
+          category: $('#ledgerCategory').value,
+          date: $('#ledgerDate').value || todayStr(),
+          note: $('#ledgerNote').value.trim()
+        });
+        toast('✓ 已记账');
+      }
       $('#ledgerAmount').value = ''; $('#ledgerNote').value = '';
       saveModule('ledger'); renderLedger(); updateFluidCards();
-      toast('✓ 已记账');
+    });
+    cancelBtn?.addEventListener('click', () => {
+      editingLedgerId = null;
+      cancelBtn.hidden = true;
+      submitBtn.textContent = '保存记录';
+      $('#ledgerAmount').value = ''; $('#ledgerNote').value = '';
+    });
+    /* 点击记录（非删除区）进入编辑模式 */
+    $('#ledgerList').addEventListener('click', (e) => {
+      if (e.target.closest('.del')) return;
+      const li = e.target.closest('li[data-lid]');
+      if (!li) return;
+      const rec = state.ledger.records.find((x) => x.id === li.dataset.lid);
+      if (!rec) return;
+      editingLedgerId = rec.id;
+      ledgerType = rec.type;
+      renderLedgerCats();
+      $('#ledgerAmount').value = rec.amount;
+      $('#ledgerCategory').value = rec.category;
+      $('#ledgerDate').value = rec.date;
+      $('#ledgerNote').value = rec.note || '';
+      cancelBtn.hidden = false;
+      submitBtn.textContent = '更新这条记录';
+      $('#ledgerAmount').focus();
+      $('#ledgerAmount').scrollIntoView({ block: 'center', behavior: 'smooth' });
     });
 
   }
@@ -1686,6 +1781,7 @@
     items.push({ icon: 'edit', title: '记一笔账', sub: '快速记账', run: () => { switchView('ledger'); setTimeout(() => $('#ledgerAmount')?.focus(), 80); } });
     items.push({ icon: 'cap', title: '加单词', sub: '艾宾浩斯词库', run: () => { switchView('study'); setTimeout(() => $('#vocabWord')?.focus(), 80); } });
     items.push({ icon: 'view3d', title: '换一句寄语', sub: '碎片寄语', run: () => { switchView('overview'); randomQuote(); } });
+    items.push({ icon: 'gear', title: '打开设置', sub: '主题 · 同步 · 预算', run: () => openSettings() });
     // 数据搜索：待办
     state.todos.forEach((t) => items.push({
       icon: 'todo', title: t.text, sub: `待办 · ${t.done ? '已完成' : '进行中'}`,
@@ -1780,6 +1876,23 @@
     setTimeout(() => { bd.hidden = true; }, 220);
   }
 
+  /* ================= 单词复习键盘快捷（1 认识 / 2 忘记 / 空格 显示释义） ================= */
+  function bindVocabKeys() {
+    document.addEventListener('keydown', (e) => {
+      if (currentView !== 'study' || CMDK.open) return;
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || document.activeElement?.isContentEditable) return;
+      const review = $('#vocabReview');
+      if (!review) return;
+      const btnReveal = review.querySelector('[data-vocab="reveal"]');
+      const btnOk = review.querySelector('[data-vocab="ok"]');
+      const btnNo = review.querySelector('[data-vocab="no"]');
+      if ((e.key === ' ' || e.code === 'Space') && btnReveal) { e.preventDefault(); btnReveal.click(); }
+      else if (e.key === '1' && btnOk) { e.preventDefault(); btnOk.click(); }
+      else if (e.key === '2' && btnNo) { e.preventDefault(); btnNo.click(); }
+    });
+  }
+
   function bindCmdk() {
     document.addEventListener('keydown', (e) => {
       // Ctrl+K / Cmd+K 打开
@@ -1870,6 +1983,7 @@
       bindSettings();
       bindData();
       bindCmdk();
+      bindVocabKeys();
       bindAddForms();
       renderAll();
       renderGreet();
