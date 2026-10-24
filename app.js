@@ -252,6 +252,13 @@
         s.setAttribute('aria-hidden', 'true');
         c.appendChild(s);
       }
+      /* 入场扫光：一次性高光带划过（每次视图切换重新触发） */
+      const oldSheen = c.querySelector(':scope > .sheen');
+      if (oldSheen) oldSheen.remove();
+      const sheen = document.createElement('i');
+      sheen.className = 'sheen';
+      sheen.setAttribute('aria-hidden', 'true');
+      c.appendChild(sheen);
     });
     if (window.__spotBound) return;
     window.__spotBound = true;
@@ -1664,6 +1671,147 @@
     }, 30000);
   }
 
+  /* ================= 命令面板（Ctrl+K / 页头搜索图标） ================= */
+  const CMDK = { open: false, items: [], sel: 0 };
+
+  function cmdkCollect() {
+    const items = [];
+    // 快速动作
+    VIEWS.forEach((v, i) => items.push({
+      icon: v.icon, title: `前往 · ${v.title}`, sub: `分区 ${i + 1}`,
+      run: () => switchView(v.id)
+    }));
+    items.push({ icon: 'todo', title: '新待办', sub: '快速添加', run: () => { switchView('overview'); setTimeout(() => $('#todoInput')?.focus(), 80); } });
+    items.push({ icon: 'note', title: '新便签', sub: '快速添加', run: () => { switchView('overview'); setTimeout(() => $('#noteAdd')?.click(), 80); } });
+    items.push({ icon: 'edit', title: '记一笔账', sub: '快速记账', run: () => { switchView('ledger'); setTimeout(() => $('#ledgerAmount')?.focus(), 80); } });
+    items.push({ icon: 'cap', title: '加单词', sub: '艾宾浩斯词库', run: () => { switchView('study'); setTimeout(() => $('#vocabWord')?.focus(), 80); } });
+    items.push({ icon: 'view3d', title: '换一句寄语', sub: '碎片寄语', run: () => { switchView('overview'); randomQuote(); } });
+    // 数据搜索：待办
+    state.todos.forEach((t) => items.push({
+      icon: 'todo', title: t.text, sub: `待办 · ${t.done ? '已完成' : '进行中'}`,
+      run: () => { switchView('overview'); setTimeout(() => $('#todoInput')?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 60); }
+    }));
+    // 此生清单
+    (state.life?.bucket || []).forEach((b) => items.push({
+      icon: 'db', title: b.text, sub: `此生清单 · ${b.done ? '已完成' : '未完成'}`,
+      run: () => switchView('goals')
+    }));
+    // 目标
+    state.goals.forEach((g) => items.push({
+      icon: 'goals', title: g.title, sub: `目标 · ${g.progress || 0}%`,
+      run: () => switchView('goals')
+    }));
+    // 单词
+    state.vocab.words.slice(0, 60).forEach((w) => items.push({
+      icon: 'cap', title: `${w.word} — ${w.meaning || ''}`, sub: `单词 · 第${(w.box || 0) + 1}阶`,
+      run: () => switchView('study')
+    }));
+    // 记账
+    state.ledger.records.slice(-30).reverse().forEach((r) => items.push({
+      icon: 'ledger', title: `${r.note || r.category} ¥${r.amount}`, sub: `记账 · ${r.date}`,
+      run: () => switchView('ledger')
+    }));
+    return items;
+  }
+
+  function cmdkFilter(q) {
+    const items = cmdkCollect();
+    if (!q.trim()) return items.slice(0, 12);
+    const kws = q.trim().toLowerCase().split(/\s+/);
+    return items.filter((it) => {
+      const hay = (it.title + ' ' + it.sub).toLowerCase();
+      return kws.every((k) => hay.includes(k));
+    }).slice(0, 14);
+  }
+
+  function cmdkRender() {
+    const list = $('#cmdkList');
+    if (!list) return;
+    CMDK.items.forEach((it, i) => {
+      const el = list.children[i];
+      if (el) el.classList.toggle('sel', i === CMDK.sel);
+    });
+    const cnt = $('#cmdkCount');
+    if (cnt) cnt.textContent = `${CMDK.items.length} 个结果`;
+  }
+
+  function cmdkApply() {
+    const list = $('#cmdkList');
+    if (!list) return;
+    const q = $('#cmdkInput').value;
+    CMDK.items = cmdkFilter(q);
+    CMDK.sel = 0;
+    const ICON_MAP = ICONS;
+    list.innerHTML = CMDK.items.map((it, i) => `
+      <button type="button" class="cmdk-item ${i === 0 ? 'sel' : ''}" data-ci="${i}">
+        <span class="cmdk-ico">${ICON_MAP[it.icon] || ICON_MAP.nav || ''}</span>
+        <span class="cmdk-txt"><b>${esc(it.title)}</b><small>${esc(it.sub)}</small></span>
+      </button>`).join('') || '<p class="cmdk-empty">没有匹配的结果</p>';
+    $$('.cmdk-item', list).forEach((btn) => btn.addEventListener('click', () => {
+      CMDK.sel = Number(btn.dataset.ci);
+      cmdkExec();
+    }));
+    cmdkRender();
+  }
+
+  function cmdkExec() {
+    const it = CMDK.items[CMDK.sel];
+    cmdkClose();
+    if (it) { it.run(); toast(it.title.slice(0, 14)); }
+  }
+
+  function cmdkOpen() {
+    CMDK.open = true;
+    const bd = $('#cmdkBackdrop');
+    bd.hidden = false;
+    requestAnimationFrame(() => bd.classList.add('is-open'));
+    const inp = $('#cmdkInput');
+    inp.value = '';
+    cmdkApply();
+    setTimeout(() => inp.focus(), 60);
+  }
+
+  function cmdkClose() {
+    CMDK.open = false;
+    const bd = $('#cmdkBackdrop');
+    $('#cmdkInput')?.blur();
+    document.activeElement?.blur();
+    bd.classList.remove('is-open');
+    setTimeout(() => { bd.hidden = true; }, 220);
+  }
+
+  function bindCmdk() {
+    document.addEventListener('keydown', (e) => {
+      // Ctrl+K / Cmd+K 打开
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+        e.preventDefault();
+        CMDK.open ? cmdkClose() : cmdkOpen();
+        return;
+      }
+      if (!CMDK.open) {
+        // 数字 1-5 快捷切换分区（输入框聚焦时忽略）
+        const tag = document.activeElement?.tagName;
+        const editing = document.activeElement?.isContentEditable;
+        if (!editing && tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT' && /^[1-5]$/.test(e.key)) {
+          switchView(VIEWS[Number(e.key) - 1].id);
+          return;
+        }
+        return;
+      }
+      // 面板内导航
+      if (e.key === 'Escape') { e.preventDefault(); cmdkClose(); }
+      else if (e.key === 'ArrowDown') { e.preventDefault(); CMDK.sel = Math.min(CMDK.sel + 1, CMDK.items.length - 1); cmdkRender(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); CMDK.sel = Math.max(CMDK.sel - 1, 0); cmdkRender(); }
+      else if (e.key === 'Enter') { e.preventDefault(); cmdkExec(); }
+    });
+    const inp = $('#cmdkInput');
+    inp?.addEventListener('input', cmdkApply);
+    $('#cmdkBackdrop')?.addEventListener('click', (e) => { if (e.target === $('#cmdkBackdrop')) cmdkClose(); });
+    // 页头搜索图标（桌面 + 手机统一入口）
+    $('#openSettingsBtnM')?.insertAdjacentHTML('beforebegin', '<button class="icon-btn" id="cmdkTriggerM" type="button" aria-label="搜索"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></button>');
+    $('#cmdkTriggerM')?.addEventListener('click', cmdkOpen);
+  }
+
   /* ================= PWA ================= */
   function registerSW() {
     if (!('serviceWorker' in navigator)) return;
@@ -1721,6 +1869,7 @@
       bindSliders();
       bindSettings();
       bindData();
+      bindCmdk();
       bindAddForms();
       renderAll();
       renderGreet();
