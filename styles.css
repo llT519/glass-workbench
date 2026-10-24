@@ -1383,3 +1383,51 @@ body { font-feature-settings:"tnum" 1; }
 .budget-row.over { border-color:rgba(224,72,95,.35); background:rgba(224,72,95,.05); }
 .budget-row.over .over-txt { color:#e0485f; }
 .budget-row.over .budget-pct { color:#e0485f; }
+
+/* ---------- 单词朗读按钮 ---------- */
+.vocab-face b { display:inline; }
+.speak-btn {
+  appearance:none; border:none; cursor:pointer; vertical-align:-2px;
+  margin-left:8px; width:30px; height:30px; border-radius:10px;
+  display:inline-grid; place-items:center;
+  color:var(--accent-primary);
+  background:rgba(var(--accent-primary-rgb),.09);
+  border:1px solid rgba(var(--accent-primary-rgb),.2);
+  transition:all .15s ease;
+}
+.speak-btn svg { width:15px; height:15px; }
+.speak-btn:hover { background:rgba(var(--accent-primary-rgb),.18); transform:scale(1.06); }
+.speak-btn:active { transform:scale(.94); }
+
+/* ---------- 批量导入面板 ---------- */
+.vocab-batch { display:flex; flex-direction:column; gap:8px; }
+.vocab-batch-panel { display:flex; flex-direction:column; gap:8px; padding:10px; border-radius:12px; border:1px dashed rgba(var(--accent-primary-rgb),.3); background:rgba(255,255,255,.4); }
+.vocab-batch-panel textarea {
+  font-family:inherit; font-size:12.5px; line-height:1.7; color:var(--text-primary);
+  border:1px solid var(--border-default); border-radius:10px; background:rgba(255,255,255,.7);
+  padding:9px 11px; outline:none; resize:vertical; min-height:88px;
+}
+.vocab-batch-panel textarea:focus { border-color:rgba(var(--accent-primary-rgb),.5); }
+
+/* ---------- 本月环比 ---------- */
+.stat-box .mom { display:block; margin-top:3px; font-size:10.5px; color:var(--text-tertiary); }
+.stat-box .mom.up { color:#e0673c; }
+.stat-box .mom.down { color:#0a9e6b; }
+
+/* ---------- 回顶按钮 ---------- */
+.to-top {
+  position:fixed; right:22px; bottom:96px; z-index:900;
+  width:44px; height:44px; border-radius:50%; cursor:pointer;
+  display:grid; place-items:center;
+  color:var(--text-secondary);
+  border:1px solid rgba(255,255,255,.75);
+  background:linear-gradient(150deg, rgba(255,255,255,.92), rgba(255,255,255,.8));
+  -webkit-backdrop-filter:blur(20px) saturate(170%); backdrop-filter:blur(20px) saturate(170%);
+  box-shadow:0 10px 30px rgba(30,45,90,.14), inset 0 1px 0 rgba(255,255,255,.95);
+  opacity:0; transform:translateY(10px) scale(.9); pointer-events:none;
+  transition:all .25s cubic-bezier(.2,.8,.2,1);
+}
+.to-top:not([hidden]) { opacity:1; transform:translateY(0) scale(1); pointer-events:auto; }
+.to-top svg { width:18px; height:18px; }
+.to-top:hover { color:var(--accent-primary); transform:translateY(-2px); }
+@media (max-width:620px) { .to-top { right:16px; bottom:88px; } }
