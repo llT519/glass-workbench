@@ -11,8 +11,8 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="stylesheet" href="styles.css?v=20260830a">
-  <link rel="stylesheet" href="vendor/fluid-glass-material.css?v=20260830a">
+  <link rel="stylesheet" href="styles.css?v=20260830b">
+  <link rel="stylesheet" href="vendor/fluid-glass-material.css?v=20260830b">
 </head>
 <body class="app-body">
 
@@ -103,9 +103,9 @@
                     <circle class="rr-bg" cx="60" cy="60" r="52"/>
                     <circle class="rr-bg" cx="60" cy="60" r="40"/>
                     <circle class="rr-bg" cx="60" cy="60" r="28"/>
-                    <circle class="rr-fg" id="ringTodo" cx="60" cy="60" r="52" stroke="#0a7cff"/>
-                    <circle class="rr-fg" id="ringPomo" cx="60" cy="60" r="40" stroke="#ff375f"/>
-                    <circle class="rr-fg" id="ringVocab" cx="60" cy="60" r="28" stroke="#30d158"/>
+                    <circle class="rr-fg rr-jump" data-jump="todo" style="cursor:pointer" id="ringTodo" cx="60" cy="60" r="52" stroke="#0a7cff"/>
+                    <circle class="rr-fg rr-jump" data-jump="mood" style="cursor:pointer" id="ringPomo" cx="60" cy="60" r="40" stroke="#ff375f"/>
+                    <circle class="rr-fg rr-jump" data-jump="study" style="cursor:pointer" id="ringVocab" cx="60" cy="60" r="28" stroke="#30d158"/>
                   </svg>
                   <div class="rhythm-center"><b id="rhythmPct">0%</b><small>完成</small></div>
                 </div>
@@ -201,14 +201,17 @@
                     <button class="chip" data-type="income" type="button">收入</button>
                   </div>
                   <div class="form-row">
-                    <label>金额<input class="input" id="ledgerAmount" type="number" step="0.01" min="0" placeholder="0.00" required></label>
+                    <label>金额<input class="input" id="ledgerAmount" inputmode="decimal" type="number" step="0.01" min="0" placeholder="0.00" required></label>
                     <label>分类<select class="input" id="ledgerCategory"></select></label>
                   </div>
                   <div class="form-row">
                     <label>日期<input class="input" id="ledgerDate" type="date"></label>
                     <label>备注<input class="input" id="ledgerNote" type="text" placeholder="可选" maxlength="40"></label>
                   </div>
-                  <button class="btn primary wide" type="submit">保存记录</button>
+                  <div class="form-row" style="grid-template-columns:1fr 1fr">
+                  <button class="btn ghost wide" type="button" id="ledgerCancelEdit" hidden>取消编辑</button>
+                  <button class="btn primary wide" type="submit" id="ledgerSubmitBtn" style="grid-column:span 2">保存记录</button>
+                </div>
                 </form>
               </div>
             </div>
@@ -323,6 +326,7 @@
               </select>
             </label>
             <label>问候昵称<input class="input" id="optNickname" type="text" maxlength="12" placeholder="怎么称呼你"></label>
+            <label>月度预算（元）<input class="input" id="optBudget" inputmode="decimal" type="number" min="0" step="100" placeholder="0 为不启用"></label>
           </div>
         </fieldset>
         <fieldset class="fieldset">
@@ -334,6 +338,7 @@
           <div class="modal-actions">
             <button class="btn primary" id="syncSaveBtn" type="button">保存并连接</button>
             <button class="btn danger" id="syncOffBtn" type="button">断开云同步</button>
+            <button class="btn ghost" id="syncNowBtn" type="button">↻ 立即同步</button>
           </div>
           <p class="hint" id="syncStatusText"></p>
         </fieldset>
@@ -356,11 +361,11 @@
       ]
     };
   </script>
-  <script src="vendor/palette-engine.js?v=20260830a"></script>
-  <script src="vendor/palette-presets.js?v=20260830a"></script>
-  <script src="sync.js?v=20260830a"></script>
-  <script src="vendor/fluid-glass-engine.js?v=20260830a"></script>
-  <script src="app.js?v=20260830a"></script>
+  <script src="vendor/palette-engine.js?v=20260830b"></script>
+  <script src="vendor/palette-presets.js?v=20260830b"></script>
+  <script src="sync.js?v=20260830b"></script>
+  <script src="vendor/fluid-glass-engine.js?v=20260830b"></script>
+  <script src="app.js?v=20260830b"></script>
   <!-- 命令面板（Ctrl+K / 点搜索图标）：全局搜索与快速动作 -->
   <div class="cmdk-backdrop" id="cmdkBackdrop" hidden>
     <div class="cmdk" role="dialog" aria-label="命令面板">
