@@ -16,6 +16,20 @@
   const money = (n) => (Math.round(n * 100) / 100).toLocaleString('zh-CN');
   const WEEK_ZH = ['一', '二', '三', '四', '五', '六', '日']; // 周一为一周开始
 
+  /* ================= 发音（Web Speech 原生）与触感反馈 ================= */
+  function speakWord(word) {
+    try {
+      if (!('speechSynthesis' in window) || !word) return;
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(word);
+      u.lang = 'en-US'; u.rate = .88; u.pitch = 1;
+      speechSynthesis.speak(u);
+    } catch (_) {}
+  }
+  function haptic(ms = 15) {
+    try { navigator.vibrate && navigator.vibrate(ms); } catch (_) {}
+  }
+
   let toastTimer = 0;
   function toast(msg) {
     const el = $('#toast');
@@ -398,6 +412,7 @@
     $$('input[type="checkbox"]', list).forEach((cb) => cb.addEventListener('change', () => {
       const t = items.find((x) => x.id === cb.dataset.id);
       if (!t) return;
+      haptic(12);
       t.done = cb.checked;
       t.doneAt = cb.checked ? todayStr() : null;
       saveModule('todos');
@@ -523,7 +538,7 @@
       const stage = vocabFace.done ? '已掌握' : `第 ${vocabFace.box + 1} 阶段`;
       wrap.innerHTML = `
         <div class="vocab-face">
-          <b>${esc(vocabFace.word)}</b>
+          <b>${esc(vocabFace.word)}</b><button class="speak-btn" data-speak="${esc(vocabFace.word)}" type="button" aria-label="朗读" title="朗读"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg></button>
           <div class="meaning">${showMeaning ? esc(vocabFace.meaning || '（未填写释义）') : '释义已隐藏，先自己回忆'}</div>
           <div class="boxinfo">记忆阶段：${stage} · 下次复习：${esc(vocabFace.nextReview || '今天')}</div>
         </div>
@@ -534,6 +549,9 @@
             : `<button class="btn primary" data-vocab="reveal" type="button">显示释义</button>
                <button class="btn ghost" data-vocab="skip" type="button">跳过</button>`}
         </div>`;
+      wrap.querySelector('[data-speak]')?.addEventListener('click', (e) => speakWord(e.currentTarget.dataset.speak));
+      /* 新词出现自动朗读一次 */
+      if (!vocabFace._spoken) { vocabFace._spoken = true; speakWord(vocabFace.word); }
       $$('[data-vocab]', wrap).forEach((btn) => btn.addEventListener('click', () => {
         const act = btn.dataset.vocab;
         const w = state.vocab.words.find((x) => x.id === vocabFace.id);
@@ -658,7 +676,17 @@
     $('#ledgerStats').innerHTML = `
       <div class="ledger-stats">
         <div class="stat-2col">
-          <div class="stat-box"><small>本月支出</small><b class="out">¥ ${money(outSum)}</b></div>
+          <div class="stat-box"><small>本月支出</small><b class="out">¥ ${money(outSum)}</b>${(() => {
+            /* 与上月支出环比 */
+            const lastMonth = (() => { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - 1); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}`; })();
+            let lastOut = 0;
+            for (const r of recs) { if (r.type === 'expense' && (r.date || '').startsWith(lastMonth)) lastOut += Number(r.amount) || 0; }
+            if (!lastOut) return '';
+            const diff = Math.round(((outSum - lastOut) / lastOut) * 100);
+            if (!diff) return '<small class="mom">与上月持平</small>';
+            const up = diff > 0;
+            return `<small class="mom ${up ? 'up' : 'down'}">较上月 ${up ? '↑' : '↓'} ${Math.abs(diff)}%</small>`;
+          })()}</div>
           <div class="stat-box"><small>本月收入</small><b class="in">¥ ${money(inSum)}</b></div>
         </div>
         ${state.settings.budget > 0 ? (() => {
@@ -1118,6 +1146,34 @@
       saveModule('vocab'); renderVocab(); updateFluidCards();
       toast('已加入词库，明天开始第一次复习');
     });
+    /* 批量导入 */
+    const batchPanel = $('#vocabBatchPanel');
+    $('#vocabBatchToggle')?.addEventListener('click', () => { batchPanel.hidden = !batchPanel.hidden; if (!batchPanel.hidden) $('#vocabBatchText')?.focus(); });
+    $('#vocabBatchBtn')?.addEventListener('click', () => {
+      const text = ($('#vocabBatchText')?.value || '').trim();
+      if (!text) { toast('先粘贴一些单词'); return; }
+      let ok = 0, dup = 0;
+      const existing = new Set(state.vocab.words.map((w) => w.word.toLowerCase()));
+      for (const line of text.split(/\n+/)) {
+        const l = line.trim();
+        if (!l) continue;
+        const m = l.match(/^([^,，\t\s]+)[,，\t\s]+(.+)$/);
+        const word = (m ? m[1] : l).trim();
+        const meaning = m ? m[2].trim() : '';
+        if (!word || word.length > 40) continue;
+        if (existing.has(word.toLowerCase())) { dup++; continue; }
+        existing.add(word.toLowerCase());
+        state.vocab.words.push({ id: uid(), word, meaning, box: 0, addedAt: todayStr(), nextReview: addDays(todayStr(), 1), done: false });
+        ok++;
+      }
+      if (!ok && dup) { toast(`全部 ${dup} 个词已存在词库`); return; }
+      saveModule('vocab');
+      $('#vocabBatchText').value = '';
+      batchPanel.hidden = true;
+      renderVocab(); updateFluidCards();
+      toast(`✓ 已导入 ${ok} 个词${dup ? `（跳过重复 ${dup}）` : ''}，明天开始复习`);
+    });
+
     $('#vocabToggleList').addEventListener('click', () => {
       const list = $('#vocabList');
       list.hidden = !list.hidden;
@@ -1193,6 +1249,7 @@
         });
         toast('✓ 已记账');
       }
+      haptic(15);
       $('#ledgerAmount').value = ''; $('#ledgerNote').value = '';
       saveModule('ledger'); renderLedger(); updateFluidCards();
     });
@@ -1456,6 +1513,7 @@
         state.mood.days = state.mood.days || {};
         const now = new Date();
         const entry = { m: k, at: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}` };
+        haptic(10);
         state.mood.days[t] = [...moodEntries(t), entry];
         saveModule('mood');
         renderMood(); renderRhythm();
@@ -1984,6 +2042,14 @@
       bindData();
       bindCmdk();
       bindVocabKeys();
+      /* 回顶按钮 */
+      const toTop = $('#toTopBtn');
+      if (toTop) {
+        const onScroll = () => { toTop.hidden = window.scrollY < 600; };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+        toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+      }
       bindAddForms();
       renderAll();
       renderGreet();
